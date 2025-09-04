@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity | Phantom Recovery</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<style>
+  /* Reset & Base */
+  * {margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI", sans-serif;}
+  body {
+    background: linear-gradient(135deg,#0A1B2C,#1e3a8a);
+    min-height:100vh;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+  }
+
+  header {
+    display:flex; justify-content: space-between; align-items:center;
+    padding:20px 40px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    box-shadow:0 2px 10px rgba(0,0,0,0.5);
+    position: sticky; top:0; z-index:1000;
+    animation: fadeDown 0.6s ease forwards;
+  }
+  header h1 {font-size:22px;}
+
+  /* Mobile menu toggle */
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 5px;
+    transition: 0.3s;
+  }
+  .menu-toggle:hover {background: rgba(96, 165, 250, 0.1);}
+  .menu-toggle span {
+    width: 25px; height: 3px; background: #60a5fa;
+    margin: 3px 0; border-radius: 2px; transition: 0.3s;
+  }
+  .menu-toggle.active span:nth-child(1) {transform: rotate(-45deg) translate(-5px, 6px); background:#fff;}
+  .menu-toggle.active span:nth-child(2) {opacity: 0;}
+  .menu-toggle.active span:nth-child(3) {transform: rotate(45deg) translate(-5px, -6px); background:#fff;}
+
+  /* Navigation */
+  header nav {display:flex; align-items:center;}
+  header nav a {
+    color:#60a5fa; margin-left:20px; text-decoration:none;
+    font-weight:500; transition:0.3s;
+    padding: 8px 12px; border-radius: 8px;
+  }
+  header nav a:hover {color:#fff; background: rgba(96, 165, 250, 0.1);}
+
+  @keyframes fadeDown {from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);}}
+
+  /* Mobile Navigation */
+  @media (max-width: 768px) {
+    header {padding: 15px 20px;}
+    header h1 {font-size: 20px;}
+    .menu-toggle {display: flex;}
+
+    header nav {
+      position: fixed;
+      top: 70px; right: -100%;
+      width: 100%; height: calc(100vh - 70px);
+      background: rgba(10, 27, 44, 0.98);
+      backdrop-filter: blur(15px);
+      flex-direction: column;
+      align-items: center;
+      padding-top: 50px;
+      transition: right 0.3s ease;
+      border-top: 1px solid rgba(96, 165, 250, 0.2);
+    }
+    header nav.active {right: 0;}
+
+    header nav a {
+      margin: 0 0 20px 0;
+      font-size: 18px;
+      padding: 15px 30px;
+      width: 80%;
+      text-align: center;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 10px;
+      opacity: 0; transform: translateX(50px);
+      animation: slideInNav 0.3s ease forwards;
+    }
+    header nav.active a:nth-child(1) {animation-delay: 0.1s;}
+    header nav.active a:nth-child(2) {animation-delay: 0.2s;}
+    header nav.active a:nth-child(3) {animation-delay: 0.3s;}
+    @keyframes slideInNav {to{opacity:1; transform:translateX(0);}}
+  }
+
+  .container {
+    flex:1; padding:30px; max-width:1000px; margin:0 auto;
+    display:flex; flex-direction:column; gap:20px;
+  }
+  @media (max-width:768px) {.container{padding:20px 15px;}}
+
+  /* Filter Buttons */
+  .filter-buttons {display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;}
+  .filter-buttons button {
+    padding:10px 18px; border:none; border-radius:10px;
+    background:#2563eb; color:#fff; cursor:pointer;
+    transition:0.3s; font-weight:500;
+    border: 1px solid rgba(96, 165, 250, 0.3);
+  }
+  .filter-buttons button:hover {background:#1d4ed8; box-shadow:0 0 15px rgba(96,165,250,0.4);}
+  .filter-buttons button.active {background:#60a5fa; box-shadow:0 0 15px rgba(96,165,250,0.5);}
+  @media (max-width:768px) {
+    .filter-buttons {justify-content:center;}
+    .filter-buttons button {flex:1; min-width:80px; font-size:14px; padding:12px 16px;}
+  }
+
+  /* Activity List */
+  .activity-list {
+    display:flex; flex-direction:column; gap:12px;
+    max-height:500px; overflow-y:auto; padding-right:5px;
+    scrollbar-width:thin; scrollbar-color:#60a5fa rgba(0,0,0,0.3);
+  }
+  .activity-list::-webkit-scrollbar {width:6px;}
+  .activity-list::-webkit-scrollbar-thumb {background:#60a5fa; border-radius:3px;}
+  .activity-list::-webkit-scrollbar-track {background:rgba(0,0,0,0.3); border-radius:3px;}
+
+  /* Activity Card */
+  .activity-card {
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(15px);
+    border-radius:15px;
+    padding:20px 25px;
+    display:flex; justify-content: space-between; align-items:center; gap:20px;
+    border:1px solid rgba(96,165,250,0.1);
+    cursor:pointer; transition:0.3s;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+  .activity-card:hover {background:rgba(0,0,0,0.5); box-shadow:0 0 20px rgba(96,165,250,0.3);}
+  @keyframes fadeInUp {from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);}}
+
+  .activity-info h4 {margin-bottom:5px; color:#E0F0FF;}
+  .activity-info p {color:#A0C4FF; font-size:14px;}
+  .activity-time {color:#60a5fa; font-size:13px; white-space:nowrap;}
+
+  @media (max-width:480px){
+    .activity-card {flex-direction:column; align-items:flex-start; gap:10px; padding:15px 18px;}
+    .activity-time {align-self:flex-end;}
+  }
+
+  /* Type Indicators */
+  .type-swap {color:#627eea;}
+  .type-withdraw {color:#4ade80;}
+  .type-case {color:#facc15;}
+
+  /* States */
+  .loading {text-align:center; padding:40px; color:#A0C4FF;}
+  .loading i {font-size:24px; animation:spin 1s linear infinite;}
+  @keyframes spin {to{transform:rotate(360deg);}}
+  .empty-state {text-align:center; padding:60px 20px; color:#A0C4FF;}
+  .empty-state i {font-size:48px; margin-bottom:20px; opacity:0.5;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><i class="fas fa-chart-line"></i> Activity</h1>
+  <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+  <nav id="navMenu">
+    <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a>
+    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="filter-buttons">
+    <button onclick="filterActivity('all')" class="active" id="allBtn">All</button>
+    <button onclick="filterActivity('swap')" id="swapBtn">Swaps</button>
+    <button onclick="filterActivity('withdraw')" id="withdrawBtn">Withdrawals</button>
+    <button onclick="filterActivity('case')" id="caseBtn">Cases</button>
+  </div>
+  <div class="activity-list" id="activityList"></div>
+</div>
+
+<script>
+const activities = [
+  {type:'swap', crypto:'BTC → ETH', amount:'0.5 BTC', time:'10:15 AM', icon:'fas fa-exchange-alt'},
+  {type:'withdraw', crypto:'USDT', amount:'1500 USDT', time:'09:45 AM', icon:'fas fa-arrow-up'},
+  {type:'case', crypto:'Phishing Scam', amount:'$1200', time:'Yesterday', icon:'fas fa-exclamation-triangle'},
+  {type:'swap', crypto:'ETH → USDT', amount:'2 ETH', time:'Yesterday', icon:'fas fa-exchange-alt'},
+  {type:'withdraw', crypto:'BTC', amount:'0.2 BTC', time:'2 days ago', icon:'fas fa-arrow-up'},
+  {type:'case', crypto:'Exchange Hack', amount:'$5000', time:'3 days ago', icon:'fas fa-shield-alt'},
+  {type:'swap', crypto:'USDT → BTC', amount:'3000 USDT', time:'3 days ago', icon:'fas fa-exchange-alt'},
+  {type:'withdraw', crypto:'ETH', amount:'1.5 ETH', time:'1 week ago', icon:'fas fa-arrow-up'},
+];
+
+// Mobile menu toggle
+const menuToggle = document.getElementById('menuToggle');
+const navMenu = document.getElementById('navMenu');
+menuToggle.addEventListener('click', ()=>{menuToggle.classList.toggle('active'); navMenu.classList.toggle('active');});
+document.querySelectorAll('nav a').forEach(link=>link.addEventListener('click',()=>{menuToggle.classList.remove('active'); navMenu.classList.remove('active');}));
+document.addEventListener('click',(e)=>{if(!document.querySelector('header').contains(e.target)){menuToggle.classList.remove('active'); navMenu.classList.remove('active');}});
+
+// Activity rendering
+const activityList = document.getElementById('activityList');
+function renderActivities(filter='all'){
+  document.querySelectorAll('.filter-buttons button').forEach(btn=>btn.classList.remove('active'));
+  document.getElementById(filter+'Btn').classList.add('active');
+  activityList.innerHTML='<div class="loading"><i class="fas fa-spinner"></i><p>Loading...</p></div>';
+  setTimeout(()=>{
+    const filtered = activities.filter(a=>filter==='all'||a.type===filter);
+    if(!filtered.length){
+      activityList.innerHTML=`<div class="empty-state"><i class="fas fa-inbox"></i><h3>No ${filter==='all'?'':filter} activities found</h3><p>Your ${filter==='all'?'recent':filter} activities will appear here.</p></div>`;
+      return;
+    }
+    activityList.innerHTML='';
+    filtered.forEach((a,i)=>{
+      const div=document.createElement('div');
+      div.className='activity-card';
+      div.style.animationDelay=`${i*0.1}s`;
+      div.innerHTML=`<div class="activity-info"><h4 class="type-${a.type}"><i class="${a.icon}"></i> ${a.crypto}</h4><p>${a.amount}</p></div><div class="activity-time">${a.time}</div>`;
+      activityList.appendChild(div);
+    });
+  },300);
+}
+function filterActivity(type){renderActivities(type);}
+renderActivities();
+</script>
+</body>
+</html>

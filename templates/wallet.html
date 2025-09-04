@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wallet | Phantom Recovery</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI", sans-serif;}
+  body{background:linear-gradient(135deg,#0a0a1a,#1a0a2e,#16213e);
+       background-size:400% 400%;animation:gradientShift 15s ease infinite;
+       min-height:100vh;color:#f1f5f9;display:flex;flex-direction:column;overflow-x:hidden;}
+  @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;
+         background:rgba(0,0,0,.4);backdrop-filter:blur(20px);
+         border-bottom:1px solid rgba(96,165,250,.2);position:sticky;top:0;z-index:100}
+  header h1{font-size:22px;font-weight:700;background:linear-gradient(45deg,#60a5fa,#a78bfa);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  header nav a{color:#93c5fd;margin-left:25px;text-decoration:none;font-weight:500;
+               padding:8px 16px;border-radius:8px;transition:.3s}
+  header nav a:hover{color:#fff;background:rgba(96,165,250,.1)}
+
+  .container{flex:1;padding:40px 20px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+
+  /* Wallets */
+  .wallet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px}
+  .wallet-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+               backdrop-filter:blur(20px);border-radius:20px;padding:25px;transition:.4s}
+  .wallet-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 10px 25px rgba(0,0,0,.4)}
+  .wallet-info{display:flex;align-items:center;gap:15px;margin-bottom:15px}
+  .wallet-info i{font-size:30px}
+  .wallet-actions button{flex:1;padding:10px;border:none;border-radius:12px;
+                         background:linear-gradient(135deg,#2563eb,#1d4ed8);
+                         color:#fff;font-weight:600;cursor:pointer;transition:.3s}
+  .wallet-actions button:hover{background:linear-gradient(135deg,#1d4ed8,#1e40af)}
+
+  /* Swap + Chart Cards */
+  .swap-card,.chart-container{background:rgba(255,255,255,.05);
+                              border:1px solid rgba(255,255,255,.1);
+                              border-radius:20px;padding:25px}
+  .swap-card h3{margin-bottom:10px}
+  .swap-card select,.swap-card input{flex:1;padding:12px;border-radius:12px;border:none;
+                                     background:rgba(255,255,255,.1);color:#fff;margin:5px 0}
+  .swap-card button{padding:12px 20px;border:none;border-radius:12px;
+                    background:linear-gradient(135deg,#10b981,#059669);
+                    color:#fff;font-weight:600;cursor:pointer}
+  .swap-card button:hover{background:linear-gradient(135deg,#059669,#047857)}
+
+  canvas{width:100%!important;height:380px!important}
+  @media(max-width:768px){canvas{height:260px!important}}
+  @media(max-width:480px){canvas{height:200px!important}}
+
+  /* Notification */
+  #notification{position:fixed;top:-100px;right:30px;
+                background:linear-gradient(135deg,#10b981,#059669);
+                color:#fff;padding:15px 20px;border-radius:12px;
+                transition:.5s;z-index:1000;font-weight:600}
+  #notification.show{top:30px}
+
+  /* Modal */
+  .modal{position:fixed;top:0;left:0;width:100%;height:100%;
+         background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:2000}
+  .modal-content{background:#1e293b;padding:25px;border-radius:15px;width:400px;max-width:90%;color:#fff}
+  .modal-content h2{margin-bottom:15px}
+  .modal-content input,.modal-content select{width:100%;padding:10px;margin:8px 0;
+                                            border:none;border-radius:8px;background:#334155;color:#fff}
+  .modal-content button{padding:12px;width:100%;border:none;border-radius:8px;
+                        background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><i class="fas fa-shield-alt"></i> Phantom Wallet</h1>
+  <nav>
+    <a href="{{ url_for('dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard</a>
+    <a href="{{ url_for('withdrawal') }}"><i class="fas fa-download"></i> Withdraw</a>
+    <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+    <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- Wallets -->
+  <div class="wallet-grid">
+    <div class="wallet-card">
+      <div class="wallet-info"><i class="fab fa-bitcoin" style="color:#f7931a"></i>
+        <div><h3>Bitcoin (BTC)</h3><p>Balance: <span class="balance-amount" data-value="0.523">0.000</span> BTC</p></div>
+      </div>
+      <div class="wallet-actions"><button onclick="openWithdraw('BTC')">Withdraw</button></div>
+    </div>
+    <div class="wallet-card">
+      <div class="wallet-info"><i class="fab fa-ethereum" style="color:#627eea"></i>
+        <div><h3>Ethereum (ETH)</h3><p>Balance: <span class="balance-amount" data-value="12.45">0.000</span> ETH</p></div>
+      </div>
+      <div class="wallet-actions"><button onclick="openWithdraw('ETH')">Withdraw</button></div>
+    </div>
+    <div class="wallet-card">
+      <div class="wallet-info"><i class="fas fa-dollar-sign" style="color:#22c55e"></i>
+        <div><h3>Tether (USDT)</h3><p>Balance: <span class="balance-amount" data-value="2500">0.000</span> USDT</p></div>
+      </div>
+      <div class="wallet-actions"><button onclick="openWithdraw('USDT')">Withdraw</button></div>
+    </div>
+  </div>
+
+  <!-- Swap -->
+  <div class="swap-card">
+    <h3>Instant Swap</h3>
+    <select id="fromCrypto"><option>BTC</option><option>ETH</option><option>USDT</option></select>
+    <input type="number" id="fromAmount" placeholder="Enter amount">
+    <select id="toCrypto"><option>ETH</option><option>BTC</option><option>USDT</option></select>
+    <input type="number" id="toAmount" placeholder="You receive" readonly>
+    <button onclick="swapCrypto()">Swap Now</button>
+  </div>
+
+  <!-- Charts -->
+  <div class="chart-container">
+    <h3>Portfolio Distribution</h3>
+    <canvas id="balanceChart"></canvas>
+  </div>
+  <div class="chart-container">
+    <h3>Live Market Trend</h3>
+    <canvas id="marketChart"></canvas>
+  </div>
+</div>
+
+<!-- Withdraw Modal -->
+<div class="modal" id="withdrawModal">
+  <div class="modal-content">
+    <h2>Withdraw <span id="withdrawCoin"></span></h2>
+    
+    <label>Choose Method</label>
+    <select id="withdrawMethod" onchange="toggleWithdrawFields()">
+      <option value="wallet">Crypto Wallet</option>
+      <option value="bank">Bank Account</option>
+    </select>
+
+    <!-- Wallet fields -->
+    <div id="walletFields">
+      <input type="text" id="withdrawAddress" placeholder="Wallet Address">
+    </div>
+
+    <!-- Bank fields -->
+    <div id="bankFields" style="display:none;">
+      <select id="bankCountry">
+        <option value="">Select Country</option>
+        <option value="us">United States</option>
+        <option value="uk">United Kingdom</option>
+        <option value="ca">Canada</option>
+        <option value="ng">Nigeria</option>
+        <option value="in">India</option>
+      </select>
+      <input type="text" id="bankName" placeholder="Bank Name">
+      <input type="text" id="accountNumber" placeholder="Account Number">
+      <input type="text" id="accountHolder" placeholder="Account Holder Name">
+      <input type="text" id="swiftCode" placeholder="SWIFT / Routing Code">
+    </div>
+
+    <input type="number" id="withdrawAmount" placeholder="Amount">
+    <button onclick="confirmWithdraw()">Confirm Withdraw</button>
+  </div>
+</div>
+
+<div id="notification">✔️ Action Successful!</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Animate balances
+  function animateBalance(el,target){let c=0;const step=target/60;
+    const i=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(i);}
+    el.textContent=c.toFixed(3);},16);}
+  window.onload=()=>{document.querySelectorAll('.balance-amount')
+    .forEach(el=>animateBalance(el,parseFloat(el.dataset.value)));};
+
+  // Portfolio chart
+  new Chart(document.getElementById('balanceChart'),{
+    type:'doughnut',
+    data:{labels:['BTC','ETH','USDT'],datasets:[{data:[0.523,12.45,2500],
+    backgroundColor:['#f7931a','#627eea','#22c55e']}]},
+    options:{plugins:{legend:{labels:{color:'#fff'}}}}
+  });
+
+  // Market chart
+  let marketData={btc:[43000,43200,42950,43500],eth:[2800,2820,2780,2850]};
+  const marketChart=new Chart(document.getElementById('marketChart'),{
+    type:'line',
+    data:{labels:['9AM','10AM','11AM','12PM'],
+      datasets:[{label:'BTC/USDT',data:marketData.btc,borderColor:'#f7931a',fill:true,tension:0.4},
+                {label:'ETH/USDT',data:marketData.eth,borderColor:'#627eea',fill:true,tension:0.4}]},
+    options:{plugins:{legend:{labels:{color:'#fff'}}},
+             scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+  });
+  setInterval(()=>{marketData.btc.push(marketData.btc.slice(-1)[0]+(Math.random()-0.5)*200);
+    marketData.eth.push(marketData.eth.slice(-1)[0]+(Math.random()-0.5)*50);
+    if(marketData.btc.length>10){marketData.btc.shift();marketData.eth.shift();}
+    marketChart.data.labels.push(new Date().toLocaleTimeString().slice(0,5));
+    if(marketChart.data.labels.length>10) marketChart.data.labels.shift();
+    marketChart.update();},4000);
+
+  // Notification
+  function showNotif(msg){const n=document.getElementById('notification');
+    n.textContent=msg;n.classList.add('show');
+    setTimeout(()=>n.classList.remove('show'),3000);}
+
+  // Swap
+  function swapCrypto(){
+    let from=document.getElementById('fromAmount').value;
+    document.getElementById('toAmount').value=from; // dummy 1:1 rate
+    showNotif("✔️ Swap Successful!");
+  }
+
+  // Withdraw
+  let selectedCoin="";
+  function openWithdraw(coin){
+    selectedCoin=coin;
+    document.getElementById('withdrawCoin').textContent=coin;
+    document.getElementById('withdrawModal').style.display='flex';
+  }
+
+  // Toggle fields
+  function toggleWithdrawFields() {
+    const method = document.getElementById("withdrawMethod").value;
+    document.getElementById("walletFields").style.display = method === "wallet" ? "block" : "none";
+    document.getElementById("bankFields").style.display = method === "bank" ? "block" : "none";
+  }
+
+  // Withdraw confirmation
+  function confirmWithdraw(){
+    let method=document.getElementById('withdrawMethod').value;
+    let amt=parseFloat(document.getElementById('withdrawAmount').value);
+    if(!amt){showNotif("❌ Enter withdrawal amount!");return;}
+
+    let details="";
+    if(method==="wallet"){
+      let addr=document.getElementById('withdrawAddress').value;
+      if(addr===""){showNotif("❌ Enter wallet address!");return;}
+      details=`Wallet: ${addr}`;
+    } else {
+      let country=document.getElementById('bankCountry').value;
+      let bank=document.getElementById('bankName').value;
+      let acc=document.getElementById('accountNumber').value;
+      let holder=document.getElementById('accountHolder').value;
+      let swift=document.getElementById('swiftCode').value;
+      if(!country||!bank||!acc||!holder||!swift){showNotif("❌ Fill all bank details!");return;}
+      details=`Bank: ${bank}, Account: ${acc}, Holder: ${holder}, SWIFT: ${swift}`;
+    }
+
+    let fee=amt*0.1;
+    let finalAmt=amt-fee;
+    document.getElementById('withdrawModal').style.display='none';
+    showNotif(`✔️ ${finalAmt} ${selectedCoin} sent via ${method.toUpperCase()} (${details}) (10% fee: ${fee} ${selectedCoin})`);
+  }
+
+  window.onclick=function(e){if(e.target==document.getElementById('withdrawModal'))
+    {document.getElementById('withdrawModal').style.display='none';}}
+</script>
+</body>
+</html>

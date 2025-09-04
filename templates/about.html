@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | Phantom Recovery - Meet Our Expert Team</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand: #2b8cff;
+      --brand-hover: #1f6fd6;
+      --dark: #0a0f1c;
+      --dark-card: #121a2a;
+      --light: #ffffff;
+      --gray: #cfd6e3;
+      --gray-dark: #7f8aa3;
+    }
+
+    * {margin:0; padding:0; box-sizing:border-box;}
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--dark);
+      color: var(--light);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Background */
+    body::before {
+      content:"";
+      position:fixed;
+      width:100%; height:100%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(43,140,255,0.08), transparent 60%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05), transparent 60%);
+      animation: bgShift 15s ease-in-out infinite alternate;
+      z-index:-1;
+    }
+    @keyframes bgShift {from{opacity:.4;} to{opacity:.8;}}
+
+    /* Navbar */
+    nav {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:15px 20px;
+      position:fixed; top:0; width:100%; z-index:1000;
+      background:rgba(10,15,28,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid rgba(43,140,255,0.15);
+    }
+    .logo {
+      font-size:1.4rem; font-weight:700; color:var(--brand);
+      display:flex; align-items:center; gap:.5rem; cursor:pointer;
+    }
+    .logo i {animation:pulse 2s infinite;}
+    @keyframes pulse {0%,100%{opacity:1;} 50%{opacity:.6;}}
+
+    /* Hamburger */
+    .menu-toggle {display:none; flex-direction:column; cursor:pointer; padding:5px;}
+    .menu-toggle span {
+      width:25px; height:3px; background:var(--light);
+      margin:3px 0; transition:0.3s; border-radius:2px;
+    }
+    .menu-toggle.active span:nth-child(1){transform:rotate(-45deg) translate(-5px,6px);}
+    .menu-toggle.active span:nth-child(2){opacity:0;}
+    .menu-toggle.active span:nth-child(3){transform:rotate(45deg) translate(-5px,-6px);}
+
+    /* Nav links */
+    .nav-links {display:flex; list-style:none; gap:2rem; transition: all .3s;}
+    .nav-links a {
+      color:var(--light); text-decoration:none; position:relative; font-weight:500;
+      transition:.3s; padding:5px 0;
+    }
+    .nav-links a::after {
+      content:""; position:absolute; bottom:-4px; left:0; height:2px; width:0;
+      background:var(--brand); transition:width .3s;
+    }
+    .nav-links a:hover {color:var(--brand);}
+    .nav-links a:hover::after {width:100%;}
+    .nav-links a.active {color:var(--brand);}
+    .nav-links a.active::after {width:100%;}
+
+    /* Mobile nav */
+    @media(max-width:768px){
+      .menu-toggle{display:flex;}
+      .nav-links{
+        position:fixed; top:70px; right:-100%; width:100%; height:calc(100vh - 70px);
+        background:rgba(10,15,28,0.98); backdrop-filter:blur(15px);
+        flex-direction:column; align-items:center; justify-content:flex-start;
+        padding-top:50px; gap:30px; transition:right 0.3s ease;
+      }
+      .nav-links.active{right:0;}
+      .nav-links li{opacity:0; transform:translateX(50px); animation:slideIn .3s ease forwards;}
+      .nav-links.active li:nth-child(1){animation-delay:0.1s;}
+      .nav-links.active li:nth-child(2){animation-delay:0.2s;}
+      .nav-links.active li:nth-child(3){animation-delay:0.3s;}
+      .nav-links.active li:nth-child(4){animation-delay:0.4s;}
+      .nav-links.active li:nth-child(5){animation-delay:0.5s;}
+      .nav-links.active li:nth-child(6){animation-delay:0.6s;}
+      @keyframes slideIn{to{opacity:1; transform:translateX(0);}}
+    }
+
+    /* Hero */
+    .hero {
+      height:100vh; display:flex; align-items:center; justify-content:center; text-align:center;
+      background:linear-gradient(135deg, rgba(43,140,255,.18), rgba(10,15,28,.92)),
+        url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+      position:relative; padding:0 20px;
+    }
+    .hero::before {
+      content:""; position:absolute; inset:0;
+      background:radial-gradient(circle at 30% 40%, rgba(43,140,255,.25), transparent 70%);
+      animation:glow 6s infinite alternate;
+    }
+    @keyframes glow {from{opacity:.5;} to{opacity:1;}}
+    .hero-content{z-index:2; max-width:800px;}
+    .hero h1{font-size:clamp(2.5rem,8vw,5rem); color:var(--brand); text-shadow:0 0 25px var(--brand);}
+    .hero p{font-size:clamp(1rem,4vw,1.2rem); color:var(--gray); margin-top:1rem;}
+
+    /* Sections */
+    .section{padding:80px 20px;}
+    .section-header{margin-bottom:60px; opacity:0; transform:translateY(40px); transition:.8s; text-align:center;}
+    .section-header.show{opacity:1; transform:translateY(0);}
+    .section-header h2{font-size:clamp(2rem,6vw,2.8rem); color:var(--brand); margin-bottom:1rem;}
+    .section-header p{color:var(--gray); font-size:clamp(1rem,3vw,1.1rem);}
+
+    /* Mission */
+    .mission{background:var(--dark-card); padding:40px 30px; border-radius:20px; max-width:900px; margin:auto;
+      border:1px solid rgba(43,140,255,0.15); position:relative; overflow:hidden;
+      opacity:0; transform:translateY(40px); transition:.8s;}
+    .mission.show{opacity:1; transform:translateY(0);}
+    .mission-content{text-align:center; position:relative; z-index:2;}
+    .mission-icon{font-size:3rem; color:var(--brand); margin-bottom:1rem;}
+    .mission p{font-size:clamp(1rem,3vw,1.1rem);}
+
+    /* Stats */
+    .stats-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px; max-width:900px; margin:auto;}
+    .stat-item{background:rgba(255,255,255,.04); border:1px solid rgba(43,140,255,.25); border-radius:15px; padding:25px 20px;
+      transition:.4s; opacity:0; transform:translateY(40px); text-align:center;}
+    .stat-item.show{opacity:1; transform:translateY(0);}
+    .stat-number{font-size:clamp(1.5rem,5vw,2rem); color:var(--brand); font-weight:700;}
+    .stat-label{color:var(--gray); font-size:clamp(0.9rem,3vw,1rem);}
+
+    /* Timeline */
+    .timeline{position:relative; max-width:900px; margin:auto;}
+    .timeline::before{content:""; position:absolute; left:50%; top:0; bottom:0; width:3px;
+      background:linear-gradient(to bottom,transparent,var(--brand),transparent); transform:translateX(-50%);}
+    .timeline-item{width:45%; padding:20px; background:var(--dark-card); border-radius:15px;
+      border:1px solid rgba(43,140,255,.25); position:relative; margin:40px 0;
+      opacity:0; transform:translateY(40px); transition:.8s;}
+    .timeline-item.show{opacity:1; transform:translateY(0);}
+    .timeline-item.left{left:0; text-align:right;}
+    .timeline-item.right{left:55%; text-align:left;}
+    .timeline-item::after{content:""; position:absolute; top:20px; width:15px; height:15px; border-radius:50%;
+      background:var(--brand); box-shadow:0 0 15px var(--brand);}
+    .timeline-item.left::after{right:-35px;}
+    .timeline-item.right::after{left:-35px;}
+
+    @media(max-width:768px){
+      .timeline::before{left:20px;}
+      .timeline-item{width:calc(100% - 60px); left:40px!important; text-align:left!important; margin:30px 0;}
+      .timeline-item::after{left:-35px!important;}
+    }
+
+    /* Team */
+    .team{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:30px; max-width:1200px; margin:auto;}
+    .team-card{background:var(--dark-card); padding:30px; border-radius:20px; text-align:center;
+      border:1px solid rgba(43,140,255,.2); transition:.5s; opacity:0; transform:translateY(40px);}
+    .team-card.show{opacity:1; transform:translateY(0);}
+    .team-avatar{width:100px; height:100px; margin:auto; border-radius:50%; overflow:hidden; border:3px solid var(--brand);}
+    .team-avatar img{width:100%; height:100%; object-fit:cover;}
+    .team-info h3{margin:.8rem 0; color:var(--light);}
+    .team-role{color:var(--brand); font-weight:500; margin-bottom:.5rem;}
+    .team-description{color:var(--gray); font-size:.9rem;}
+    .team-social{margin-top:1rem; display:flex; justify-content:center; gap:15px;}
+    .social-link{color:var(--gray); transition:.3s;}
+    .social-link:hover{color:var(--brand);}
+
+    /* Footer */
+    footer{text-align:center; padding:40px 20px; border-top:1px solid rgba(43,140,255,.15); color:var(--gray);}
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo"><i class="fas fa-shield-alt"></i>CryptoRecovery</div>
+    <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="{{ url_for('index') }}">Home</a></li>
+      <li><a href="{{ url_for('about') }}" class="active">About</a></li>
+      <li><a href="{{ url_for('services') }}">Services</a></li>
+      <li><a href="{{ url_for('case') }}">Report a Case</a></li>
+      <li><a href="{{ url_for('contact') }}">Contact</a></li>
+      <li><a href="{{ url_for('register') }}">Register</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>About Us</h1>
+      <p>We help victims of crypto loss recover their assets with advanced forensics, legal expertise, and world-class support.</p>
+    </div>
+  </section>
+
+  <!-- MISSION -->
+  <section class="section">
+    <div class="section-header"><h2>Our Mission</h2><p>Empowering victims of crypto loss with hope and results</p></div>
+    <div class="mission"><div class="mission-content"><i class="fas fa-bullseye mission-icon"></i><p>We are building the world's most trusted crypto recovery platform, combining blockchain forensics with human expertise.</p></div></div>
+  </section>
+
+  <!-- STATS -->
+  <section class="section">
+    <div class="section-header"><h2>Our Impact</h2></div>
+    <div class="stats-grid">
+      <div class="stat-item"><span class="stat-number">$50M+</span><span class="stat-label">Recovered</span></div>
+      <div class="stat-item"><span class="stat-number">3,200+</span><span class="stat-label">Cases Solved</span></div>
+      <div class="stat-item"><span class="stat-number">82%</span><span class="stat-label">Success Rate</span></div>
+      <div class="stat-item"><span class="stat-number">24/7</span><span class="stat-label">Support</span></div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="section">
+    <div class="section-header"><h2>Our Journey</h2></div>
+    <div class="timeline">
+      <div class="timeline-item left"><div class="timeline-year">2020</div><p>Founded with a vision to help victims of crypto scams.</p></div>
+      <div class="timeline-item right"><div class="timeline-year">2021</div><p>Expanded globally with 1,000+ cases solved.</p></div>
+      <div class="timeline-item left"><div class="timeline-year">2022</div><p>Launched AI-powered forensic tools.</p></div>
+      <div class="timeline-item right"><div class="timeline-year">2023</div><p>Partnered with global law firms & exchanges.</p></div>
+      <div class="timeline-item left"><div class="timeline-year">2024</div><p>Reached $50M+ recovered, launched 24/7 response team.</p></div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="section" id="team">
+    <div class="section-header"><h2>Meet Our Experts</h2></div>
+    <div class="team">
+      <div class="team-card"><div class="team-avatar"><img src="https://randomuser.me/api/portraits/men/12.jpg"></div><div class="team-info"><h3>John Davidson</h3><div class="team-role">Founder & CEO</div><p class="team-description">Ex-FBI investigator with 15+ years in cybercrime forensics.</p><div class="team-social"><a href="#" class="social-link"><i class="fab fa-linkedin"></i></a></div></div></div>
+      <div class="team-card"><div class="team-avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg"></div><div class="team-info"><h3>Sarah Chen</h3><div class="team-role">CTO</div><p class="team-description">PhD in Cryptography, pioneer in blockchain tracing.</p><div class="team-social"><a href="#" class="social-link"><i class="fab fa-github"></i></a></div></div></div>
+      <div class="team-card"><div class="team-avatar"><img src="https://randomuser.me/api/portraits/men/55.jpg"></div><div class="team-info"><h3>Marcus Rodriguez</h3><div class="team-role">Blockchain Investigator</div><p class="team-description">Expert in on-chain analytics & asset recovery.</p><div class="team-social"><a href="#" class="social-link"><i class="fab fa-twitter"></i></a></div></div></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>© 2025 PhantomRecovery. All Rights Reserved.</footer>
+
+  <!-- Scripts -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    const nav = document.querySelector("nav");
+
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!nav.contains(e.target) && !menuToggle.contains(e.target)) {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+      }
+    });
+
+    // Scroll animations
+    const revealEls = document.querySelectorAll('.section-header, .mission, .stat-item, .timeline-item, .team-card');
+    window.addEventListener('scroll', () => {
+      revealEls.forEach(el=>{
+        const rect = el.getBoundingClientRect();
+        if(rect.top < window.innerHeight - 100){el.classList.add('show');}
+
+      });
+    });
+  </script>
+</body>
+</html>

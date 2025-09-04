@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Case | Phantom Recovery</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<style>
+  /* ---------------- Reset & Base ---------------- */
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI", sans-serif;}
+  body {
+    background: linear-gradient(135deg, #0A1B2C, #1e3a8a);
+    min-height:100vh;
+    color:#fff;
+    display:flex;
+    flex-direction: column;
+  }
+
+  /* ---------------- Header ---------------- */
+  header {
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding:20px 40px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    position: sticky;
+    top:0;
+    z-index:10;
+    animation: fadeDown 1s ease forwards;
+  }
+  header h1{font-size:22px;}
+  header nav a {
+    color:#60a5fa;
+    margin-left:20px;
+    text-decoration:none;
+    font-weight:500;
+    transition:0.3s;
+  }
+  header nav a:hover{color:#fff;}
+  @keyframes fadeDown {0%{opacity:0; transform:translateY(-20px);}100%{opacity:1; transform:translateY(0);}}
+
+  /* ---------------- Container ---------------- */
+  .container{
+    display:flex;
+    flex:1;
+    padding:30px;
+    gap:30px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  /* ---------------- Card ---------------- */
+  .card{
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(15px);
+    border-radius:20px;
+    padding:30px;
+    width:100%;
+    max-width:700px;
+    animation: fadeInUp 1s ease forwards;
+  }
+  @keyframes fadeInUp {0%{opacity:0; transform:translateY(20px);}100%{opacity:1; transform:translateY(0);}}
+
+  .card h2{margin-bottom:25px; text-align:center; color:#60a5fa;}
+
+  /* ---------------- Form ---------------- */
+  .input-group{
+    margin-bottom:20px;
+    text-align:left;
+  }
+  .input-group label{
+    display:block;
+    margin-bottom:5px;
+  }
+  .input-group input, .input-group select, .input-group textarea{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background: rgba(255,255,255,0.1);
+    color:#fff;
+    outline:none;
+    transition:0.3s;
+  }
+  .input-group input:focus, .input-group select:focus, .input-group textarea:focus{
+    box-shadow:0 0 10px rgba(96,165,250,0.6);
+  }
+  textarea{resize:none; min-height:100px;}
+
+  /* ---------------- Buttons ---------------- */
+  .btn{
+    padding:12px 20px;
+    border:none;
+    border-radius:12px;
+    background:#2563eb;
+    color:#fff;
+    cursor:pointer;
+    font-size:16px;
+    transition:0.3s;
+  }
+  .btn:hover{background:#1d4ed8; box-shadow:0 0 10px #60a5fa;}
+
+  /* ---------------- Step Progress ---------------- */
+  .steps{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:25px;
+    counter-reset: step;
+  }
+  .step{
+    text-align:center;
+    position:relative;
+    flex:1;
+  }
+  .step:before{
+    counter-increment: step;
+    content: counter(step);
+    width:30px;
+    height:30px;
+    line-height:30px;
+    border-radius:50%;
+    background:#2563eb;
+    display:block;
+    margin:0 auto 10px;
+    color:#fff;
+    transition:0.3s;
+  }
+  .step.active:before{background:#60a5fa;}
+  .step p{font-size:14px; color:#fff;}
+
+  /* ---------------- File Upload ---------------- */
+  .file-upload{
+    border: 2px dashed rgba(255,255,255,0.3);
+    padding:20px;
+    text-align:center;
+    border-radius:12px;
+    transition:0.3s;
+  }
+  .file-upload:hover{border-color:#60a5fa;}
+
+  /* ---------------- Confirmation Popup ---------------- */
+  .popup{
+    position: fixed;
+    top:-100px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#2563eb;
+    padding:15px 25px;
+    border-radius:12px;
+    color:#fff;
+    font-weight:bold;
+    box-shadow:0 2px 10px rgba(0,0,0,0.5);
+    transition:0.5s ease;
+    z-index:999;
+  }
+  .popup.show{top:20px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Submit New Case</h1>
+  <nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="profile.html">Profile</a>
+    <a href="login.html">Logout</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>Submit Your Case</h2>
+
+    <div class="steps">
+      <div class="step active"><p>Details</p></div>
+      <div class="step"><p>Verification</p></div>
+      <div class="step"><p>Submission</p></div>
+    </div>
+
+    <div class="input-group">
+      <label>Type of Issue</label>
+      <select>
+        <option>Phishing Scam</option>
+        <option>Exchange Hack</option>
+        <option>Forgotten Wallet</option>
+        <option>Investment Fraud</option>
+        <option>Rug Pull</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Amount Lost (USD)</label>
+      <input type="number" placeholder="Enter amount lost">
+    </div>
+
+    <div class="input-group">
+      <label>Crypto Type</label>
+      <select>
+        <option>Bitcoin (BTC)</option>
+        <option>Ethereum (ETH)</option>
+        <option>USDT</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Wallet / Transaction ID</label>
+      <input type="text" placeholder="0xABC123...">
+    </div>
+
+    <div class="input-group">
+      <label>Upload Proof (Screenshots / PDF)</label>
+      <div class="file-upload">Drag & Drop Files Here or Click to Upload</div>
+    </div>
+
+    <div class="input-group">
+      <label>Additional Notes</label>
+      <textarea placeholder="Any extra details..."></textarea>
+    </div>
+
+    <button class="btn" id="submitBtn">Submit Case</button>
+  </div>
+</div>
+
+<div class="popup" id="popupMsg">Case Submitted Successfully!</div>
+
+<script>
+  const submitBtn = document.getElementById('submitBtn');
+  const popup = document.getElementById('popupMsg');
+
+  submitBtn.addEventListener('click', () => {
+    // Simple step animation
+    const steps = document.querySelectorAll('.step');
+    steps.forEach((s,i)=>{
+      if(!s.classList.contains('active')){
+        s.classList.add('active');
+        return;
+      }
+    });
+
+    // Show popup
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 3000);
+  });
+</script>
+
+</body>
+</html>

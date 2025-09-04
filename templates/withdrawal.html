@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Withdraw Funds | Phantom Recovery</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<style>
+  /* ---------------- Reset & Base ---------------- */
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI", sans-serif;}
+  body {
+    background: linear-gradient(135deg, #0A1B2C, #1e3a8a);
+    min-height:100vh;
+    color:#fff;
+    display:flex;
+    flex-direction: column;
+  }
+
+  /* ---------------- Header ---------------- */
+  header {
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding:20px 40px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    position: sticky;
+    top:0;
+    z-index:10;
+    animation: fadeDown 1s ease forwards;
+  }
+  header h1{font-size:22px;}
+  header nav a {
+    color:#60a5fa;
+    margin-left:20px;
+    text-decoration:none;
+    font-weight:500;
+    transition:0.3s;
+  }
+  header nav a:hover{color:#fff;}
+  @keyframes fadeDown {0%{opacity:0; transform:translateY(-20px);}100%{opacity:1; transform:translateY(0);}}
+
+  /* ---------------- Container ---------------- */
+  .container{
+    flex:1;
+    padding:30px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+  }
+
+  /* ---------------- Card ---------------- */
+  .card{
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(15px);
+    border-radius:20px;
+    padding:30px;
+    width:100%;
+    max-width:600px;
+    animation: fadeInUp 1s ease forwards;
+  }
+  @keyframes fadeInUp {0%{opacity:0; transform:translateY(20px);}100%{opacity:1; transform:translateY(0);}}
+  .card h2{margin-bottom:25px; text-align:center; color:#60a5fa;}
+
+  /* ---------------- Input Styles ---------------- */
+  .input-group{
+    margin-bottom:20px;
+    text-align:left;
+  }
+  .input-group label{
+    display:block;
+    margin-bottom:5px;
+  }
+  .input-group input, .input-group select{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background: rgba(255,255,255,0.1);
+    color:#fff;
+    outline:none;
+    transition:0.3s;
+  }
+  .input-group input:focus, .input-group select:focus{
+    box-shadow: 0 0 10px #60a5fa;
+  }
+
+  /* ---------------- Withdraw Button ---------------- */
+  button{
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:#fff;
+    cursor:pointer;
+    transition:0.3s;
+    width:100%;
+    font-size:16px;
+  }
+  button:hover{
+    background:#1d4ed8;
+    box-shadow: 0 0 15px #60a5fa;
+  }
+
+  /* ---------------- Popup Notification ---------------- */
+  .popup{
+    position:fixed;
+    top:-100px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#16a34a;
+    color:#fff;
+    padding:15px 25px;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.5);
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:0.5s;
+    z-index:999;
+  }
+  .popup.show{
+    top:20px;
+  }
+
+  /* ---------------- Commission Display ---------------- */
+  .commission{
+    margin-bottom:20px;
+    font-size:14px;
+    color:#E0F0FF;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .commission span{
+    font-weight:bold;
+    color:#60a5fa;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Withdraw Funds</h1>
+  <nav>
+    <a href="{{ url_for('dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard</a>
+    <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+    <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>Withdraw Recovered Funds</h2>
+    
+    <!-- Crypto Selection -->
+    <div class="input-group">
+      <label>Select Crypto</label>
+      <select id="cryptoSelect" onchange="toggleOtherCrypto()">
+        <option value="BTC">Bitcoin (BTC)</option>
+        <option value="ETH">Ethereum (ETH)</option>
+        <option value="USDT">USDT</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <!-- Hidden field for Other -->
+    <div class="input-group" id="otherCryptoGroup" style="display:none;">
+      <label>Enter Other Cryptocurrency</label>
+      <input type="text" id="otherCryptoInput" placeholder="Enter coin name (e.g., XRP, ADA)">
+    </div>
+
+    <!-- Wallet -->
+    <div class="input-group">
+      <label>Wallet Address</label>
+      <input type="text" placeholder="0xABC123..." id="walletInput">
+    </div>
+
+    <!-- Amount -->
+    <div class="input-group">
+      <label>Amount</label>
+      <input type="number" placeholder="Amount to withdraw" id="amountInput">
+    </div>
+
+    <!-- Commission -->
+    <div class="commission">
+      <span>Commission: <span id="commissionValue">5%</span></span>
+      <span>Discount Applied: <span id="discountValue">0%</span></span>
+    </div>
+
+    <button id="withdrawBtn">Withdraw</button>
+  </div>
+</div>
+
+<!-- Popup -->
+<div class="popup" id="popup">
+  <i class="fas fa-check-circle"></i> Withdrawal Successful!
+</div>
+
+<script>
+  const withdrawBtn = document.getElementById('withdrawBtn');
+  const popup = document.getElementById('popup');
+  const commissionValue = document.getElementById('commissionValue');
+  const discountValue = document.getElementById('discountValue');
+
+  // Toggle Other Crypto field
+  function toggleOtherCrypto(){
+    const select = document.getElementById('cryptoSelect');
+    const otherGroup = document.getElementById('otherCryptoGroup');
+    if(select.value === 'other'){
+      otherGroup.style.display = 'block';
+    } else {
+      otherGroup.style.display = 'none';
+    }
+  }
+
+  // Example discount logic
+  const commissionRate = 5; // 5%
+  const discountRate = 2; // 2% discount if > $1000
+
+  withdrawBtn.addEventListener('click', ()=>{
+    const amount = parseFloat(document.getElementById('amountInput').value);
+    const crypto = document.getElementById('cryptoSelect').value;
+    const otherCrypto = document.getElementById('otherCryptoInput').value;
+
+    let selectedCrypto = crypto === "other" ? otherCrypto : crypto;
+
+    if(!selectedCrypto){
+      alert('Please select or enter a cryptocurrency!');
+      return;
+    }
+    if(isNaN(amount) || amount <= 0){
+      alert('Please enter a valid amount!');
+      return;
+    }
+
+    // Calculate discount
+    let discount = 0;
+    if(amount >= 1000){
+      discount = discountRate;
+    }
+
+    commissionValue.textContent = commissionRate + '%';
+    discountValue.textContent = discount + '%';
+
+    // Show popup
+    popup.textContent = `Withdrawal Successful! (${selectedCrypto})`;
+    popup.classList.add('show');
+    setTimeout(()=>{popup.classList.remove('show');}, 3000);
+
+    // Clear inputs
+    document.getElementById('walletInput').value = '';
+    document.getElementById('amountInput').value = '';
+    document.getElementById('otherCryptoInput').value = '';
+  });
+</script>
+
+</body>
+</html>

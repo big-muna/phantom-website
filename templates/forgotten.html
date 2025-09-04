@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgot Password | Phantom Recovery</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Reset */
+    * {margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI", sans-serif;}
+    body {
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background: linear-gradient(135deg, #1e3a8a, #1e40af, #1e3a8a);
+      animation: gradientBG 8s ease infinite;
+      background-size: 300% 300%;
+    }
+    @keyframes gradientBG {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    .forgot-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      text-align: center;
+      width: 350px;
+      animation: slideUp 1s ease forwards;
+    }
+    @keyframes slideUp {
+      0% {opacity:0; transform:translateY(80px);}
+      100% {opacity:1; transform:translateY(0);}
+    }
+
+    .forgot-container h2 {
+      color:#fff;
+      margin-bottom:15px;
+    }
+    .forgot-container p {
+      color:#ddd;
+      font-size:14px;
+      margin-bottom:25px;
+    }
+
+    .input-group {
+      margin-bottom:15px;
+      text-align:left;
+    }
+    .input-group label {
+      color:#fff;
+      font-size:14px;
+      display:block;
+      margin-bottom:5px;
+    }
+    .input-group input {
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:10px;
+      outline:none;
+      background: rgba(255,255,255,0.2);
+      color:#fff;
+      font-size:14px;
+      transition:0.3s;
+    }
+    .input-group input:focus {
+      background: rgba(255,255,255,0.3);
+      box-shadow:0 0 10px #60a5fa;
+    }
+
+    .btn {
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:#2563eb;
+      color:#fff;
+      font-size:16px;
+      cursor:pointer;
+      margin-top:10px;
+      transition:0.3s;
+    }
+    .btn:hover {
+      background:#1d4ed8;
+      box-shadow:0 0 15px #3b82f6;
+    }
+
+    .back-link {
+      margin-top:20px;
+      color:#fff;
+      font-size:14px;
+    }
+    .back-link a {
+      color:#60a5fa;
+      text-decoration:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="forgot-container">
+    <h2>Forgot Password?</h2>
+    <p>Enter your registered email below and we’ll send you instructions to reset your password.</p>
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('forgotten') }}">
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="Enter your email" required>
+      </div>
+      <button type="submit" class="btn">Send Reset Link</button>
+    </form>
+
+    <div class="back-link">
+      Remember your password? <a href="{{ url_for('login') }}">Login here</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Phantom Recovery</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <style>
+    /* Reset */
+    * {margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI", sans-serif;}
+    body {
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background: linear-gradient(135deg, #1e3a8a, #1e40af, #1e3a8a);
+      animation: gradientBG 8s ease infinite;
+      background-size: 300% 300%;
+      flex-direction: column;
+    }
+    @keyframes gradientBG {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    /* Navigation */
+    nav {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    nav a {
+      color: #e0e7ff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      position: relative;
+      padding-bottom: 5px;
+      transition: color 0.3s;
+    }
+    nav a::after {
+      content:"";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background:#60a5fa;
+      transition: width 0.3s ease-in-out;
+    }
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+    nav a:hover {
+      color:#60a5fa;
+    }
+
+    /* Register container */
+    .register-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      text-align: center;
+      width: 350px;
+      animation: slideUp 1s ease forwards;
+      margin-top: 100px;
+    }
+    @keyframes slideUp {
+      0% {opacity:0; transform:translateY(80px);}
+      100% {opacity:1; transform:translateY(0);}
+    }
+
+    .register-container h2 {
+      color:#fff;
+      margin-bottom:20px;
+    }
+
+    .input-group {margin-bottom:15px;text-align:left;}
+    .input-group label {
+      color:#fff;font-size:14px;display:block;margin-bottom:5px;
+    }
+    .input-group input {
+      width:100%;padding:10px;border:none;border-radius:10px;
+      outline:none;background: rgba(255,255,255,0.2);
+      color:#fff;font-size:14px;transition:0.3s;
+    }
+    .input-group input:focus {
+      background: rgba(255,255,255,0.3);
+      box-shadow:0 0 10px #60a5fa;
+    }
+
+    .btn {
+      width:100%;padding:12px;border:none;border-radius:10px;
+      background:#2563eb;color:#fff;font-size:16px;
+      cursor:pointer;margin-top:10px;transition:0.3s;
+    }
+    .btn:hover {
+      background:#1d4ed8;
+      box-shadow:0 0 15px #3b82f6;
+    }
+
+    /* Social buttons */
+    .social-login {
+      margin: 20px 0;
+    }
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .social-btn i {
+      margin-right: 10px;
+    }
+    .google {background:#db4437;}
+    .google:hover {background:#c1351d;}
+    .facebook {background:#1877f2;}
+    .facebook:hover {background:#0d65d9;}
+    .twitter {background:#1da1f2;}
+    .twitter:hover {background:#0d95e8;}
+
+    .login-link {
+      margin-top:15px;
+      color:#fff;
+      font-size:13px;
+    }
+    .login-link a {color:#60a5fa;text-decoration:none;}
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('services') }}">Services</a>
+    <a href="{{ url_for('case') }}">Report a Case</a>
+    <a href="{{ url_for('contact') }}">Contact</a>
+    <a href="{{ url_for('register') }}" class="active">Register</a>
+    <a href="{{ url_for('login') }}">Login</a>
+  </nav>
+
+  <!-- Register Form -->
+  <div class="register-container">
+    <h2>Create Account</h2>
+    <form id="registerForm" method="POST" action="{{ url_for('register') }}">
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" name="username" placeholder="Enter your full name" required>
+      </div>
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Enter your email" required>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="btn">Register</button>
+    </form>
+
+    <!-- OR divider -->
+    <div class="social-login">
+      <p style="color:#fff; margin:15px 0;">Or sign up with</p>
+      <button class="social-btn google"><i class="fab fa-google"></i> Continue with Google</button>
+      <button class="social-btn facebook"><i class="fab fa-facebook-f"></i> Continue with Facebook</button>
+      <button class="social-btn twitter"><i class="fab fa-twitter"></i> Continue with Twitter</button>
+    </div>
+
+    <div class="login-link">
+      Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+    </div>
+  </div>
+
+  <!-- SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          Swal.fire({
+            icon: '{{ "success" if category == "success" else "error" }}',
+            title: '{{ message }}',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+          });
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report a Case | CryptoGuard Recovery</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ---------------- Reset & Base ---------------- */
+    * {margin:0; padding:0; box-sizing:border-box;}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77, #0d1b2a);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      color: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------------- Navigation ---------------- */
+    nav {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #4cc9f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+    .nav-links li a {
+      color: #e0e7ff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      position: relative;
+      padding-bottom: 5px;
+      transition: color 0.3s;
+    }
+    .nav-links li a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: #4cc9f0;
+      transition: width 0.3s ease-in-out;
+    }
+    .nav-links li a:hover::after,
+    .nav-links li a.active::after { width: 100%; }
+    .nav-links li a:hover { color: #4cc9f0; }
+
+    /* ---------------- Form ---------------- */
+    .form-wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .form-container {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 650px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: slideInUp 1s ease-out;
+    }
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #4cc9f0, #3a86ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titlePulse 2s infinite;
+    }
+    .form-container p {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #cfd8dc;
+      opacity: 0;
+      animation: fadeInDelay 1s ease 0.3s forwards;
+    }
+
+    /* ---------------- Form Groups & Floating Labels ---------------- */
+    .form-group { position: relative; margin-bottom: 25px; opacity: 0; transform: translateY(20px); animation: fadeSlideUp 0.6s forwards; }
+    .form-group:nth-child(1){animation-delay:0.2s;}
+    .form-group:nth-child(2){animation-delay:0.3s;}
+    .form-group:nth-child(3){animation-delay:0.4s;}
+    .form-group:nth-child(4){animation-delay:0.5s;}
+    .form-group:nth-child(5){animation-delay:0.6s;}
+    .form-group:nth-child(6){animation-delay:0.7s;}
+    .form-group:nth-child(7){animation-delay:0.8s;}
+
+    .form-group label {
+      position: absolute;
+      top: 14px; left: 15px;
+      font-size: 0.9rem;
+      color: #aaa;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 16px 15px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #4cc9f0;
+      box-shadow: 0 0 10px rgba(76,201,240,0.5);
+      background: rgba(255,255,255,0.12);
+    }
+    input:focus ~ label,
+    input:not(:placeholder-shown) ~ label,
+    textarea:focus ~ label,
+    textarea:not(:placeholder-shown) ~ label {
+      top: -10px;
+      font-size: 0.75rem;
+      color: #4cc9f0;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+
+    /* ---------------- File Input ---------------- */
+    .file-input {
+      padding: 15px;
+      border: 2px dashed #415a77;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.3s;
+    }
+    .file-input:hover {
+      border-color: #4cc9f0;
+      background: rgba(76,201,240,0.08);
+    }
+
+    /* ---------------- Toggle ---------------- */
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .toggle input {
+      appearance: none;
+      width: 50px; height: 26px;
+      background: #415a77;
+      border-radius: 20px;
+      position: relative;
+      transition: 0.3s;
+    }
+    .toggle input:checked {
+      background: linear-gradient(135deg,#3a86ff,#4cc9f0);
+      box-shadow: 0 0 12px rgba(76,201,240,0.6);
+    }
+    .toggle input::before {
+      content:"";
+      position:absolute; top:2px; left:2px;
+      width:22px; height:22px;
+      background:#fff;
+      border-radius:50%;
+      transition:0.3s;
+    }
+    .toggle input:checked::before { transform:translateX(24px); }
+
+    /* ---------------- Button ---------------- */
+    .submit-btn {
+      width:100%; padding:16px;
+      border:none; border-radius:12px;
+      background: linear-gradient(135deg,#3a86ff,#4361ee,#7209b7);
+      background-size:200% 200%;
+      color:#fff; font-size:1.1rem; font-weight:600;
+      cursor:pointer; transition:0.4s;
+      animation: buttonPulse 2s infinite;
+    }
+    .submit-btn:hover {
+      background-position:right center;
+      transform:translateY(-2px);
+      box-shadow:0 8px 20px rgba(58,134,255,0.5);
+    }
+
+    /* ---------------- Modal ---------------- */
+    .success-animation {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.8);
+      display:flex; justify-content:center; align-items:center;
+      opacity:0; visibility:hidden;
+      transition:0.5s;
+      z-index:1000;
+    }
+    .success-animation.show { opacity:1; visibility:visible; }
+    .success-content {
+      background: rgba(255,255,255,0.1);
+      padding: 35px;
+      border-radius: 20px;
+      text-align: center;
+      color: #fff;
+      transform: scale(0.9);
+      transition: 0.5s;
+    }
+    .success-animation.show .success-content { transform: scale(1); }
+    .success-icon { font-size: 3rem; color: #4cc9f0; margin-bottom: 15px; }
+
+    /* ---------------- Footer ---------------- */
+    footer {
+      text-align:center;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+    footer a { color:#4cc9f0; text-decoration:none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ---------------- Animations ---------------- */
+    @keyframes gradientShift { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+    @keyframes slideInUp { from{opacity:0;transform:translateY(40px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes fadeInDelay { from{opacity:0;} to{opacity:1;} }
+    @keyframes fadeSlideUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+    @keyframes titlePulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.03);} }
+    @keyframes buttonPulse { 0%,100%{box-shadow:0 6px 15px rgba(58,134,255,0.3);} 50%{box-shadow:0 6px 20px rgba(58,134,255,0.5);} }
+    @keyframes fall { to { transform:translateY(110vh) rotate(360deg); opacity:0; } }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="logo"><i class="fas fa-shield-alt"></i> CryptoRecovery</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}">Home</a></li>
+      <li><a href="{{ url_for('about') }}">About</a></li>
+      <li><a href="{{ url_for('services') }}">Services</a></li>
+      <li><a href="{{ url_for('case') }}" class="active">Report a Case</a></li>
+      <li><a href="{{ url_for('contact') }}">Contact</a></li>
+      <li><a href="{{ url_for('register') }}">Register</a></li>
+    </ul>
+  </nav>
+
+  <!-- Form -->
+  <div class="form-wrapper">
+    <div class="form-container">
+      <h2><i class="fas fa-file-shield"></i> Report a Case</h2>
+      <p>Please provide accurate details to help us recover your assets.</p>
+
+      <form id="caseForm" method="POST" action="{{ url_for('submit_case') }}" enctype="multipart/form-data">
+        <div class="form-group">
+          <input type="text" id="issue" name="issue" required placeholder=" ">
+          <label for="issue">Type of Issue</label>
+        </div>
+        <div class="form-group">
+          <input type="number" id="amount" name="amount" required placeholder=" ">
+          <label for="amount">Amount Lost (USD)</label>
+        </div>
+        <div class="form-group">
+          <input type="text" id="currency" name="currency" required placeholder=" ">
+          <label for="currency">Currency / Token</label>
+        </div>
+        <div class="form-group">
+          <textarea id="wallet" name="wallet" required placeholder=" "></textarea>
+          <label for="wallet">Wallet Address / TX ID</label>
+        </div>
+        <div class="form-group">
+          <input type="text" id="exchange" name="exchange" placeholder=" ">
+          <label for="exchange">Exchange / Platform Name</label>
+        </div>
+        <div class="form-group">
+          <input type="email" id="contact" name="contact" required placeholder=" ">
+          <label for="contact">Contact Information</label>
+        </div>
+        <div class="form-group">
+          <input type="file" id="file" name="file" class="file-input">
+        </div>
+        <div class="toggle">
+          <input type="checkbox" id="consent" name="consent" required>
+          <label for="consent">I agree to Terms & Privacy Policy</label>
+        </div>
+        <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Submit Case</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-animation" id="successModal">
+    <div class="success-content">
+      <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+      <h3>Case Submitted Successfully!</h3>
+      <p>Our team will review and contact you shortly.</p>
+      <p><strong>Case ID:</strong> <span id="caseId"></span></p>
+    </div>
+  </div>
+
+  <!-- Login Required Modal -->
+  <div class="success-animation" id="loginModal">
+    <div class="success-content">
+      <div class="success-icon"><i class="fas fa-exclamation-circle"></i></div>
+      <h3>Login Required</h3>
+      <p>You must be logged in to continue the case submission process.</p>
+      <a href="{{ url_for('login') }}" style="color:#4cc9f0; font-weight:600; text-decoration:underline;">Click here to login</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Phantom Recovery. All rights reserved. | <a href="{{ url_for('privacy') }}">Privacy Policy</a></p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    const form = document.getElementById('caseForm');
+
+    // Mock check for login status (replace with actual auth logic)
+    const isLoggedIn = false; // change to true when user is logged in
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      if(!isLoggedIn){
+        // Show login modal
+        const loginModal = document.getElementById('loginModal');
+        loginModal.classList.add('show');
+        setTimeout(()=>{ loginModal.classList.remove('show'); }, 5000);
+        return;
+      }
+
+      // If logged in, show success modal
+      const successModal = document.getElementById('successModal');
+      document.getElementById('caseId').textContent = 
+        "CR-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*9000+1000);
+      successModal.classList.add('show');
+      setTimeout(()=>{ successModal.classList.remove('show'); form.reset(); }, 4000);
+
+      // Confetti effect
+      for(let i=0;i<30;i++){
+        const conf=document.createElement('div');
+        conf.style.position='fixed';
+        conf.style.left=Math.random()*100+'%';
+        conf.style.top='-10px';
+        conf.style.width='8px';
+        conf.style.height='8px';
+        conf.style.background=['#4cc9f0','#3a86ff','#7209b7'][Math.floor(Math.random()*3)];
+        conf.style.opacity='0.9';
+        conf.style.borderRadius='50%';
+        conf.style.animation=`fall ${2+Math.random()*3}s linear forwards`;
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(),5000);
+      }
+    });
+  </script>
+
+</body>
+</html>

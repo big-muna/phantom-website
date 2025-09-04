@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CryptoGuard Recovery - Professional Cryptocurrency Asset Recovery Services</title>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ---------------- Reset & Base ---------------- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      line-height:1.6;
+      color:#1f2937;
+      background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      -webkit-font-smoothing:antialiased;
+      min-height:100vh;
+      transition: background .35s, color .35s;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+    /* ---------------- Header / Nav ---------------- */
+    header{
+      position:fixed;top:0;left:0;right:0;z-index:1200;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      border-bottom:1px solid rgba(15,23,42,0.06);
+      box-shadow:0 6px 24px rgba(2,6,23,0.06);
+    }
+    nav.container{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    .logo{display:flex;align-items:center;gap:.6rem;font-weight:800;color:#374151}
+    .logo i{color:#667eea;font-size:1.25rem}
+    .nav-links{display:flex;gap:1.6rem;list-style:none}
+    .nav-links a{color:#374151;text-decoration:none;font-weight:600;transition:color .2s}
+    .nav-links a:hover{color:#667eea}
+
+    /* ---------------- Main ---------------- */
+    .main-content{margin-top:92px;padding:36px 0 80px}
+
+    .btn-register {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #0077cc;  /* nice dim blue */
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-register:hover {
+  background: #005fa3;
+}
+
+    /* Hero w/ animated gradient */
+    .hero{
+      border-radius:18px;
+      padding:48px 28px;
+      text-align:center;
+      box-shadow:0 12px 40px rgba(2,6,23,0.12);
+      background: linear-gradient(270deg,#667eea,#764ba2,#667eea);
+      background-size:600% 600%;
+      animation: gradientShift 12s ease infinite;
+      color: white;
+      position:relative;
+      overflow:hidden;
+    }
+    @keyframes gradientShift{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+    .hero h1{
+      font-size:2.6rem;
+      margin-bottom:.6rem;
+      line-height:1.05;
+      letter-spacing:-0.5px;
+    }
+    .hero p{font-size:1.05rem;opacity:.95;margin-bottom:18px}
+    .cta-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{
+      display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 1.6rem;border-radius:999px;border:none;font-weight:700;cursor:pointer;text-decoration:none;
+      transition:transform .16s ease, box-shadow .16s ease;
+    }
+    .btn-primary{background:#0f172a;color:#fff;box-shadow:0 8px 24px rgba(2,6,23,0.24)}
+    .btn-primary:hover{transform:translateY(-4px)}
+    .btn-ghost{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.12)}
+    /* trust badges */
+    .trust-row{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap;opacity:.95}
+    .trust-badge{background:rgba(255,255,255,0.12);padding:8px 12px;border-radius:999px;font-size:.9rem}
+
+    /* ---------------- Sections ---------------- */
+    .section{
+      background:linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.93));
+      border-radius:14px;padding:28px;margin:22px 0;box-shadow:0 10px 30px rgba(2,6,23,0.06);
+    }
+    .section h2{display:flex;align-items:center;gap:.6rem;font-size:1.4rem;color:#1f2937;margin-bottom:10px}
+    .section h2 i{color:#667eea}
+
+    /* services */
+    .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:14px}
+    .service-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e6eef9;transition:transform .28s,box-shadow .28s;position:relative;overflow:hidden}
+    .service-card i{font-size:1.4rem;color:#475569;margin-bottom:10px}
+    .service-card h3{margin-bottom:8px}
+    .service-card p{color:#475569;font-size:.95rem}
+    .service-card:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(2,6,23,0.06)}
+    /* subtle shimmer overlay */
+    .service-card::after{content:"";position:absolute;left:-120%;top:0;height:100%;width:40%;transform:skewX(-18deg);background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.5), rgba(255,255,255,0));transition:left .6s}
+    .service-card:hover::after{left:140%}
+
+    /* stats */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+    .stat-card{background:#fff;padding:18px;border-radius:12px;text-align:center;border:1px solid #eef6ff}
+    .stat-number{font-size:1.6rem;font-weight:800;color:#1f2937}
+
+    /* team */
+    .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .team-card{background:#fff;padding:16px;border-radius:12px;text-align:center;border:1px solid #eef6ff}
+    .team-avatar{width:88px;height:88px;border-radius:999px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;background:linear-gradient(135deg,#667eea,#764ba2)}
+
+    /* testimonials slider */
+    .testimonial-wrap{position:relative;overflow:hidden;padding:6px 0}
+    .testimonial-slider{position:relative;min-height:120px}
+    .testimonial{opacity:0;transform:translateY(8px);transition:opacity .45s ease, transform .45s ease;padding:14px;background:#fff;border-radius:10px;border-left:4px solid #667eea}
+    .testimonial.active{opacity:1;transform:translateY(0)}
+    .testimonial-author{margin-top:10px;font-weight:700;color:#374151;font-size:.95rem}
+
+    /* ---------------- Form Wizard ---------------- */
+    .wizard{max-width:820px;margin:0 auto}
+    .steps{display:flex;gap:8px;margin-bottom:18px;align-items:center;flex-wrap:wrap}
+    .step{flex:1;min-width:100px;padding:8px;border-radius:10px;background:#f1f5f9;text-align:center;font-weight:700;color:#475569}
+    .step.active{background:#667eea;color:#fff}
+    .step.small{font-size:.85rem;padding:6px}
+
+    .form-panel{background:#fff;padding:18px;border-radius:12px;border:1px solid #e6eef9}
+    label{display:block;margin-bottom:6px;font-weight:700;color:#374151}
+    input[type="text"],input[type="email"],input[type="number"],input[type="tel"],select,textarea{
+      width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef9;font-size:1rem;margin-bottom:10px
+    }
+    textarea{min-height:120px;resize:vertical}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .file-upload{border:2px dashed #dfeefe;padding:16px;text-align:center;border-radius:8px;background:#fbfdff;cursor:pointer}
+    .file-upload p{font-size:.95rem;color:#475569}
+    .muted{color:#6b7280;font-size:.92rem}
+
+    .wizard-actions{display:flex;gap:10px;justify-content:space-between;margin-top:10px;align-items:center}
+    .wizard-right{display:flex;gap:10px}
+    .btn-ghost-inv{background:#fff;border:1px solid #e6eef9;padding:.6rem 1rem;border-radius:8px;font-weight:700}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.55);z-index:1500;padding:20px}
+    .modal-content{background:#fff;padding:20px;border-radius:12px;max-width:520px;width:100%;text-align:center;position:relative}
+    .close-modal{position:absolute;right:10px;top:8px;background:none;border:none;font-size:20px;cursor:pointer}
+
+    /* live chat */
+    .chat-btn{position:fixed;right:28px;bottom:28px;width:60px;height:60px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#fff;z-index:1400;background:linear-gradient(135deg,#667eea,#764ba2);box-shadow:0 12px 32px rgba(2,6,23,0.18);cursor:pointer}
+
+    /* theme toggle */
+    .theme-toggle{position:fixed;left:28px;bottom:28px;width:48px;height:48px;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(2,6,23,0.12);z-index:1400;cursor:pointer}
+    .theme-toggle i{color:#334155}
+
+    /* dark mode overrides */
+    body.dark-mode{
+      background:#071124;color:#e6eef9;
+    }
+    body.dark-mode header{background:rgba(6,8,12,0.6);border-bottom-color:rgba(255,255,255,0.03)}
+    body.dark-mode .section{background:linear-gradient(180deg, rgba(6,8,12,0.9), rgba(6,8,12,0.85));box-shadow:none}
+    body.dark-mode .service-card, body.dark-mode .stat-card, body.dark-mode .team-card, body.dark-mode .testimonial, body.dark-mode .form-panel{background:#071024;border:1px solid rgba(255,255,255,0.04);color:#cfe8ff}
+    body.dark-mode .service-card::after{background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.05), rgba(255,255,255,0))}
+    body.dark-mode .btn-primary{background:linear-gradient(135deg,#06b6d4,#06a1d6);color:#021018}
+    body.dark-mode .team-avatar{background:linear-gradient(135deg,#06b6d4,#667eea)}
+    body.dark-mode .testimonial{border-left-color:#06b6d4}
+    body.dark-mode .file-upload{background:#041227;border:1px dashed rgba(255,255,255,0.04)}
+    body.dark-mode .trust-badge{background:rgba(255,255,255,0.04);color:#cfe8ff}
+
+    /* responsive */
+    @media (max-width:900px){
+      .form-row{grid-template-columns:1fr}
+      .nav-links{display:none}
+      .hero h1{font-size:1.7rem}
+      .cta-buttons{flex-direction:column;align-items:center}
+      .service-card::after{display:none}
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+   <header>
+    <nav class="container">
+      <div class="logo"><i class="fas fa-shield-alt"></i> Phantom Recovery</div>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('services') }}">Services</a></li>
+        <li><a href="{{ url_for('case') }}">Submit Case</a></li>
+        <li><a href="{{ url_for('about') }}">About</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+
+        <!-- Login Button -->
+        <a href="{{ url_for('login') }}" class="login-btn">
+          <i class="fas fa-user"></i> Login
+        </a>
+        <!-- Registration Button -->
+<li><a href="{{ url_for('register') }}" class="btn-register">Register</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="main-content container">
+
+    <!-- HERO -->
+    <section id="home" class="hero" aria-labelledby="hero-heading">
+      <h1 id="hero-heading">Professional Cryptocurrency Recovery — Transparent, Secure, Effective</h1>
+      <p>We help individuals and businesses recover lost, stolen, or inaccessible cryptocurrency using on-chain analytics, OSINT, and legal pathways. No false promises — realistic outcomes.</p>
+
+      <div class="cta-buttons" role="group" aria-label="Primary actions">
+        <a href="#submit-case" class="btn btn-primary"><i class="fas fa-file-alt"></i> Start a Case</a>
+        <a href="#contact" class="btn btn-ghost"><i class="fas fa-phone"></i> Request Consultation</a>
+      </div>
+
+      <div class="trust-row" aria-hidden="true">
+        <div class="trust-badge">SSL Secured</div>
+        <div class="trust-badge">GDPR-ready</div>
+        <div class="trust-badge">Chainalysis-friendly</div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="section" aria-labelledby="services-heading">
+      <h2 id="services-heading"><i class="fas fa-cogs"></i> Our Recovery Services</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <i class="fas fa-fishing-hook"></i>
+          <h3>Phishing Scams</h3>
+          <p>Recovery of funds lost via phishing, fake sites, and social engineering.</p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-exchange-alt"></i>
+          <h3>Exchange Hacks</h3>
+          <p>Work with exchanges & custody providers to trace and recover assets where possible.</p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-key"></i>
+          <h3>Lost Wallet Access</h3>
+          <p>Assistance for locked wallets, corrupt keystores and credential recovery (never request seed phrases).</p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-chart-line"></i>
+          <h3>Investment Fraud</h3>
+          <p>Investigations into Ponzi schemes, fake ICOs and fraudulent platforms.</p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-rug"></i>
+          <h3>Rug Pulls & Pump-Dumps</h3>
+          <p>Targeted workflows to identify perpetrators and recover traceable funds.</p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-gavel"></i>
+          <h3>Legal Support</h3>
+          <p>Partnerships with specialized counsel for cross-border legal action and subpoenas.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="section" aria-labelledby="track-heading">
+      <h2 id="track-heading"><i class="fas fa-chart-bar"></i> Our Track Record</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number">$45M+</div><div class="muted">Recovered Assets</div></div>
+        <div class="stat-card"><div class="stat-number">2,500+</div><div class="muted">Cases Handled</div></div>
+        <div class="stat-card"><div class="stat-number">78%</div><div class="muted">Success Rate</div></div>
+        <div class="stat-card"><div class="stat-number">24/7</div><div class="muted">Support Available</div></div>
+      </div>
+    </section>
+
+    <!-- CASE SUBMISSION WIZARD -->
+    <section id="submit-case" class="section" aria-labelledby="submit-heading">
+      <h2 id="submit-heading"><i class="fas fa-file-upload"></i> Submit Your Case</h2>
+
+      <div class="wizard">
+        <div class="steps" id="wizardSteps">
+          <div class="step active small" data-step="1">1 • Issue</div>
+          <div class="step small" data-step="2">2 • Details</div>
+          <div class="step small" data-step="3">3 • Contact</div>
+        </div>
+
+        <form id="caseWizardForm" class="form-panel" novalidate>
+          <!-- STEP 1 -->
+          <div class="step-panel" data-step="1">
+            <label for="caseType">Type of Issue *</label>
+            <select id="caseType" required>
+              <option value="">Select issue type...</option>
+              <option value="phishing">Phishing Scam</option>
+              <option value="exchange-hack">Exchange Hack</option>
+              <option value="lost-access">Lost Wallet Access</option>
+              <option value="investment-fraud">Investment Fraud</option>
+              <option value="rug-pull">Rug Pull / Pump-Dump</option>
+              <option value="other">Other</option>
+            </select>
+
+            <div class="form-row">
+              <div>
+                <label for="amountLost">Amount Lost (USD)</label>
+                <input id="amountLost" type="number" min="0" step="0.01" placeholder="0.00">
+              </div>
+              <div>
+                <label for="currency">Currency / Token</label>
+                <input id="currency" type="text" placeholder="BTC, ETH, USDT, etc.">
+              </div>
+            </div>
+            <p class="muted">Not sure of exact amounts? An estimate is fine — we will verify on-chain.</p>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="step-panel hidden" data-step="2">
+            <label for="walletAddress">Wallet Address(es)</label>
+            <input id="walletAddress" type="text" placeholder="0x..., comma or newline separated">
+
+            <label for="transactionId">Transaction ID(s)</label>
+            <input id="transactionId" type="text" placeholder="0x..., comma or newline separated">
+
+            <label for="platform">Exchange / Platform</label>
+            <input id="platform" type="text" placeholder="Name of exchange or platform involved">
+
+            <label for="description">Describe what happened *</label>
+            <textarea id="description" required placeholder="Timeline, links, steps you've tried, and any suspicious communications..."></textarea>
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="step-panel hidden" data-step="3">
+            <div class="form-row">
+              <div>
+                <label for="firstName">First Name *</label>
+                <input id="firstName" type="text" required>
+              </div>
+              <div>
+                <label for="lastName">Last Name *</label>
+                <input id="lastName" type="text" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="email">Email Address *</label>
+                <input id="email" type="email" required>
+              </div>
+              <div>
+                <label for="phone">Phone Number</label>
+                <input id="phone" type="tel" placeholder="+1 (555) 123-4567">
+              </div>
+            </div>
+
+            <label>Supporting Evidence</label>
+            <div class="file-upload" id="fileUpload" tabindex="0" role="button" aria-label="Upload supporting evidence">
+              <i class="fas fa-cloud-upload-alt" style="font-size:20px;color:#667eea;margin-bottom:8px"></i>
+              <p id="fileUploadText">Drop files here or click to upload</p>
+              <small class="muted">Screenshots, transaction records, communications (Max 10MB per file)</small>
+              <input type="file" id="evidence" multiple accept="image/*,.pdf,.doc,.docx" style="display:none">
+            </div>
+
+            <div style="margin-top:10px">
+              <label><input id="agreeTerms" type="checkbox" required> I agree to the <a href="#" style="color:#667eea">Terms & Conditions</a> and <a href="#" style="color:#667eea">Privacy Policy</a></label>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="wizard-actions">
+            <div>
+              <button type="button" id="prevBtn" class="btn-ghost-inv" disabled>&larr; Back</button>
+            </div>
+            <div class="wizard-right">
+              <div class="muted" id="stepNote">Step 1 of 3</div>
+              <div>
+                <button type="button" id="nextBtn" class="btn btn-ghost">Next &rarr;</button>
+                <button type="submit" id="submitBtn" class="btn btn-primary hidden"><i class="fas fa-paper-plane"></i> Submit Case</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ABOUT / TEAM -->
+    <section id="about" class="section" aria-labelledby="about-heading">
+      <h2 id="about-heading"><i class="fas fa-users"></i> Our Expert Team</h2>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar"><i class="fas fa-user-tie"></i></div>
+          <h3>Sarah Chen</h3>
+          <div class="muted"><strong>Lead Blockchain Investigator</strong></div>
+          <p class="muted">10+ years in cybersecurity and blockchain analysis. Former cybercrime investigator with deep tracing expertise.</p>
+        </div>
+
+        <div class="team-card">
+          <div class="team-avatar"><i class="fas fa-balance-scale"></i></div>
+          <h3>Michael Rodriguez</h3>
+          <div class="muted"><strong>Legal Counsel</strong></div>
+          <p class="muted">Specializes in crypto litigation and cross-border asset recovery.</p>
+        </div>
+
+        <div class="team-card">
+          <div class="team-avatar"><i class="fas fa-search"></i></div>
+          <h3>Dr. James Park</h3>
+          <div class="muted"><strong>Technical Director</strong></div>
+          <p class="muted">PhD in computer science with focus on blockchain forensics and smart contract auditing.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS (Slider) -->
+    <section class="section" aria-labelledby="test-heading">
+      <h2 id="test-heading"><i class="fas fa-quote-left"></i> Client Testimonials</h2>
+
+      <div class="testimonial-wrap">
+        <div class="testimonial-slider" id="testimonialSlider">
+          <div class="testimonial active">
+            <p>"Phantom Recovery helped me recover $75,000 worth of Bitcoin that I thought was lost forever. Professional and transparent."</p>
+            <div class="testimonial-author">— Anonymous Client, Case #CR-2024-157</div>
+          </div>
+
+          <div class="testimonial">
+            <p>"After falling victim to a fake DeFi platform, their team recovered 85% of my investment and guided me through the legal steps."</p>
+            <div class="testimonial-author">— Anonymous Client, Case #CR-2024-203</div>
+          </div>
+
+          <div class="testimonial">
+            <p>"Fast response, clear communication, and deep on-chain expertise — highly recommended."</p>
+            <div class="testimonial-author">— Anonymous Client, Case #CR-2025-014</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section" aria-labelledby="contact-heading">
+      <h2 id="contact-heading"><i class="fas fa-envelope"></i> Contact Information</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><i class="fas fa-phone" style="font-size:20px;color:#667eea"></i><div style="margin-top:8px;font-weight:800">24/7 Hotline</div><div class="muted">+1 (555) 123-4567</div></div>
+        <div class="stat-card"><i class="fas fa-envelope" style="font-size:20px;color:#667eea"></i><div style="margin-top:8px;font-weight:800">Email Support</div><div class="muted">help@cryptoguardrecovery.com</div></div>
+        <div class="stat-card"><i class="fas fa-comments" style="font-size:20px;color:#667eea"></i><div style="margin-top:8px;font-weight:800">Live Chat</div><div class="muted">Available 24/7 on our site</div></div>
+        <div class="stat-card"><i class="fas fa-map-marker-alt" style="font-size:20px;color:#667eea"></i><div style="margin-top:8px;font-weight:800">Office</div><div class="muted">123 Financial District, New York, NY</div></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- THEME TOGGLE -->
+  <div class="theme-toggle" id="themeToggle" title="Toggle dark / light theme" role="button" aria-pressed="false">
+    <i class="fas fa-moon"></i>
+  </div>
+
+  <!-- LIVE CHAT (simulated) -->
+  <div class="chat-btn" id="chatBtn" title="Open live chat" aria-label="Open live chat">
+    <i class="fas fa-comments"></i>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div id="successModal" class="modal hidden" style="display:none" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close-modal" id="closeModal" aria-label="Close">&times;</button>
+      <i class="fas fa-check-circle" style="font-size:42px;color:#10b981;margin-bottom:8px"></i>
+      <h3 id="modalTitle">Case Submitted Successfully!</h3>
+      <p class="muted">Thank you — our team will review your submission and contact you shortly.</p>
+      <p><strong>Reference:</strong> <span id="caseReference">—</span></p>
+      <div style="margin-top:10px"><button class="btn btn-primary" id="modalCloseBtn">Close</button></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer aria-labelledby="footerTitle">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;padding:28px 0">
+        <div>
+          <h3 id="footerTitle" style="color:#fff">Phantom Recovery</h3>
+          <p style="color:#dbeafe">Professional cryptocurrency asset recovery services with a proven record.</p>
+        </div>
+        <div>
+          <h3 style="color:#fff">Services</h3>
+          <p style="color:#cfe8ff"><a href="#services" style="color:#cfe8ff;text-decoration:none">Phishing Recovery</a></p>
+          <p style="color:#cfe8ff"><a href="#services" style="color:#cfe8ff;text-decoration:none">Exchange Hack Recovery</a></p>
+        </div>
+        <div>
+          <h3 style="color:#fff">Legal</h3>
+          <p style="color:#cfe8ff"><a href="#" style="color:#cfe8ff;text-decoration:none">Terms & Conditions</a></p>
+          <p style="color:#cfe8ff"><a href="#" style="color:#cfe8ff;text-decoration:none">Privacy Policy</a></p>
+        </div>
+        <div>
+          <h3 style="color:#fff">Connect</h3>
+          <p style="color:#cfe8ff"><a href="#" style="color:#cfe8ff">LinkedIn</a></p>
+          <p style="color:#cfe8ff"><a href="#" style="color:#cfe8ff">Twitter</a></p>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);color:#cfe8ff;margin-top:10px">
+        &copy; 2025 Phantom Recovery. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT: Interactions -->
+  <script>
+    // Smooth scrolling for local anchors
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e){
+        const target = document.querySelector(this.getAttribute('href'));
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      });
+    });
+
+    /* ---------------- Wizard Logic ---------------- */
+    (function(){
+      const steps = Array.from(document.querySelectorAll('.step'));
+      const panels = Array.from(document.querySelectorAll('.step-panel'));
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const submitBtn = document.getElementById('submitBtn');
+      const stepNote = document.getElementById('stepNote');
+      const form = document.getElementById('caseWizardForm');
+
+      let current = 0; // index 0 = step 1
+
+      function showStep(idx){
+        steps.forEach((s,i)=> s.classList.toggle('active', i===idx));
+        panels.forEach((p,i)=> {
+          if(i===idx){ p.classList.remove('hidden'); p.style.display='block' }
+          else { p.classList.add('hidden'); p.style.display='none' }
+        });
+
+        prevBtn.disabled = idx === 0;
+        nextBtn.classList.toggle('hidden', idx === panels.length-1);
+        submitBtn.classList.toggle('hidden', idx !== panels.length-1);
+        stepNote.textContent = 'Step ' + (idx+1) + ' of ' + panels.length;
+      }
+
+      function validateStep(idx){
+        // basic required checks for each panel
+        const panel = panels[idx];
+        const required = Array.from(panel.querySelectorAll('[required]'));
+        for(const el of required){
+          if(el.type === 'checkbox' ? !el.checked : !el.value.trim()){
+            el.classList.add('invalid');
+            el.scrollIntoView({behavior:'smooth',block:'center'});
+            return false;
+          }
+        }
+        return true;
+      }
+
+      nextBtn.addEventListener('click', ()=>{
+        if(validateStep(current)){
+          current = Math.min(current + 1, panels.length-1);
+          showStep(current);
+        }
+      });
+
+      prevBtn.addEventListener('click', ()=>{
+        current = Math.max(current - 1, 0);
+        showStep(current);
+      });
+
+      // on submit: create fake reference, show modal, clear form
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+
+        // validate last step
+        if(!validateStep(current)) return;
+
+        // Generate a reference id
+        const ref = 'CR-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000 + 10000);
+        document.getElementById('caseReference').textContent = ref;
+
+        // show modal
+        const modal = document.getElementById('successModal');
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden','false');
+
+        // reset wizard
+        form.reset();
+        updateFileText([]);
+        current = 0;
+        showStep(current);
+      });
+
+      // Initialize
+      showStep(0);
+    })();
+
+    /* ---------------- File upload UX ---------------- */
+    (function(){
+      const fileUpload = document.getElementById('fileUpload');
+      const fileInput = document.getElementById('evidence');
+      const fileText = document.getElementById('fileUploadText');
+
+      function updateFileText(files){
+        if(!files || files.length === 0) {
+          fileText.textContent = 'Drop files here or click to upload';
+        } else {
+          const names = Array.from(files).map(f => f.name).join(', ');
+          fileText.textContent = 'Selected: ' + names;
+        }
+      }
+
+      fileUpload.addEventListener('click', ()=> fileInput.click());
+      fileUpload.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }});
+
+      fileInput.addEventListener('change', e => updateFileText(e.target.files));
+
+      fileUpload.addEventListener('dragover', e => { e.preventDefault(); fileUpload.style.background = '#eef7ff'; });
+      ['dragleave','drop'].forEach(ev => fileUpload.addEventListener(ev, e => { e.preventDefault(); fileUpload.style.background = ''; }));
+      fileUpload.addEventListener('drop', e => {
+        e.preventDefault();
+        const dtFiles = e.dataTransfer.files;
+        fileInput.files = dtFiles;
+        updateFileText(dtFiles);
+      });
+
+      // exposed for wizard reset
+      window.updateFileText = updateFileText;
+    })();
+
+    /* ---------------- Testimonial Slider ---------------- */
+    (function(){
+      const slides = Array.from(document.querySelectorAll('#testimonialSlider .testimonial'));
+      let current = 0;
+      function show(i){
+        slides.forEach((s,idx)=> s.classList.toggle('active', idx === i));
+      }
+      show(0);
+      setInterval(()=>{
+        current = (current + 1) % slides.length;
+        show(current);
+      },5000);
+    })();
+
+    /* ---------------- Intersection Animations ---------------- */
+    (function(){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.style.opacity = 1;
+            entry.target.style.transform = 'translateY(0)';
+            entry.target.style.transition = 'opacity .6s ease, transform .6s ease';
+            io.unobserve(entry.target);
+          }
+        });
+      },{threshold:0.12});
+
+      document.querySelectorAll('.section, .hero').forEach(el=>{
+        el.style.opacity = 0;
+        el.style.transform = 'translateY(16px)';
+        io.observe(el);
+      });
+    })();
+
+    /* ---------------- Theme Toggle ---------------- */
+    (function(){
+      const btn = document.getElementById('themeToggle');
+      const icon = btn.querySelector('i');
+      const body = document.body;
+      const saved = localStorage.getItem('theme') || '';
+
+      if(saved === 'dark'){ body.classList.add('dark-mode'); icon.classList.replace('fa-moon','fa-sun'); btn.setAttribute('aria-pressed','true'); }
+
+      btn.addEventListener('click', ()=>{
+        body.classList.toggle('dark-mode');
+        const isDark = body.classList.contains('dark-mode');
+        icon.classList.toggle('fa-moon', !isDark);
+        icon.classList.toggle('fa-sun', isDark);
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        btn.setAttribute('aria-pressed', String(isDark));
+      });
+    })();
+
+    /* ---------------- Live Chat (simulated) ---------------- */
+    (function(){
+      const chat = document.getElementById('chatBtn');
+      chat.addEventListener('click', ()=>{
+        alert('Live chat is simulated in this demo. Integrate Intercom/Tawk.to or your chat provider for production.');
+      });
+    })();
+
+    /* ---------------- Modal close handlers ---------------- */
+    (function(){
+      const modal = document.getElementById('successModal');
+      const close = document.getElementById('closeModal');
+      const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+      function hideModal(){
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden','true');
+      }
+
+      close.addEventListener('click', hideModal);
+      modalCloseBtn.addEventListener('click', hideModal);
+      modal.addEventListener('click', e => { if(e.target === modal) hideModal(); });
+    })();
+  </script>
+</body>
+</html>
