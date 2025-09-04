@@ -462,28 +462,42 @@ def wallet():
 
     # Example wallet balances
     wallets = [
-        {"coin": "Bitcoin (BTC)", "balance": 0.523},
-        {"coin": "Ethereum (ETH)", "balance": 12.450},
-        {"coin": "Tether (USDT)", "balance": 2500.0}
+        {"coin": "BTC", "name": "Bitcoin", "balance": 0.523},
+        {"coin": "ETH", "name": "Ethereum", "balance": 12.450},
+        {"coin": "USDT", "name": "Tether", "balance": 2500.0}
     ]
 
-    # Example portfolio distribution
-    portfolio = [
-        {"coin": "BTC", "percentage": 20},
-        {"coin": "ETH", "percentage": 50},
-        {"coin": "USDT", "percentage": 30},
-    ]
+    # Portfolio distribution for chart
+    portfolio = [{"coin": w["coin"], "balance": w["balance"]} for w in wallets]
 
-    # Example market trend
+    # Market trend (dummy values)
     market_trends = [
         {"coin": "BTC", "price": 27300, "change": "+2.5%"},
         {"coin": "ETH", "price": 1800, "change": "-1.2%"},
         {"coin": "USDT", "price": 1.0, "change": "0%"},
     ]
 
-    return render_template("wallet.html", wallets=wallets, portfolio=portfolio,
-                           market_trends=market_trends, user=username)
+    return render_template(
+        "wallet.html",
+        wallets=wallets,
+        portfolio=portfolio,
+        market_trends=market_trends,
+        user=username
+    )
+@app.route("/wallet/receive", methods=["POST"])
+def receive_funds():
+    username = session.get("user")
+    if not username:
+        return {"status": "error", "message": "Login required"}, 401
 
+    coin = request.json.get("coin")
+    amount = float(request.json.get("amount", 0))
+
+    # Here, you would normally update the user's wallet in DB
+    # Example:
+    # db.update_wallet(username, coin, amount)
+
+    return {"status": "success", "message": f"{amount} {coin} added to your wallet!"}
 
 # ----------------- Activity -----------------
 @app.route("/activity")
