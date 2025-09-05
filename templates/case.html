@@ -276,7 +276,8 @@
       <h2><i class="fas fa-file-shield"></i> Report a Case</h2>
       <p>Please provide accurate details to help us recover your assets.</p>
 
-      <form id="caseForm" method="POST" action="{{ url_for('submit_case') }}" enctype="multipart/form-data">
+      <!-- Corrected action -->
+      <form id="caseForm" method="POST" action="{{ url_for('submit') }}" enctype="multipart/form-data">
         <div class="form-group">
           <input type="text" id="issue" name="issue" required placeholder=" ">
           <label for="issue">Type of Issue</label>
@@ -341,29 +342,25 @@
   <!-- Scripts -->
   <script>
     const form = document.getElementById('caseForm');
-
-    // Mock check for login status (replace with actual auth logic)
-    const isLoggedIn = false; // change to true when user is logged in
+    const isLoggedIn = false; // replace with actual login check
 
     form.addEventListener('submit', e => {
       e.preventDefault();
 
       if(!isLoggedIn){
-        // Show login modal
         const loginModal = document.getElementById('loginModal');
         loginModal.classList.add('show');
         setTimeout(()=>{ loginModal.classList.remove('show'); }, 5000);
         return;
       }
 
-      // If logged in, show success modal
       const successModal = document.getElementById('successModal');
       document.getElementById('caseId').textContent = 
         "CR-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*9000+1000);
       successModal.classList.add('show');
       setTimeout(()=>{ successModal.classList.remove('show'); form.reset(); }, 4000);
 
-      // Confetti effect
+      // Confetti
       for(let i=0;i<30;i++){
         const conf=document.createElement('div');
         conf.style.position='fixed';

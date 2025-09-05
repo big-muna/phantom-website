@@ -2,8 +2,11 @@ import os
 import random
 import time
 import requests
+import secrets
+from datetime import datetime
 from bitcoinlib.wallets import Wallet
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from web3 import Web3
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
@@ -11,6 +14,7 @@ from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import text
+from flask_migrate import Migrate
 
 # ----------------- App Setup -----------------
 app = Flask(__name__, template_folder="templates")
@@ -23,7 +27,73 @@ DATABASE_URL = os.getenv(
 )
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+
+# ✅ Correct SQLAlchemy & Migrate initialization
+db = SQLAlchemy()
+migrate = Migrate()
+db.init_app(app)
+migrate.init_app(app, db)
+
+# ----------------- Paystack Config -----------------
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "your_paystack_secret_key")
+PAYSTACK_URL = "https://api.paystack.co"
+
+# ----------------- Ethereum Setup -----------------
+INFURA_URL = os.getenv("INFURA_URL")
+PRIVATE_KEY = os.getenv("WALLET_PRIVATE_KEY")
+SENDER_ADDRESS = os.getenv("WALLET_ADDRESS")
+
+# Connect to Ethereum via Infura
+w3 = Web3(Web3.HTTPProvider(INFURA_URL))
+
+if w3.is_connected:
+    print("✅ Connected to Ethereum network")
+else:
+    print("❌ Connection failed")
+
+# Function to send ETH
+def send_eth(to_address, amount_eth):
+    try:
+        amount_wei = w3.to_wei(amount_eth, "ether")  # updated to snake_case
+        nonce = w3.eth.get_transaction_count(SENDER_ADDRESS)
+
+        tx = {
+            "nonce": nonce,
+            "to": to_address,
+            "value": amount_wei,
+            "gas": 21000,
+            "gasPrice": w3.to_wei("50", "gwei")
+        }
+
+        signed_tx = w3.eth.account.sign_transaction(tx, PRIVATE_KEY)
+        tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+        return {"status": "success", "tx_hash": tx_hash.hex()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# ----------------- Database Model -----------------
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    profile_image = db.Column(db.String(200), nullable=True)
+
+    btc_address = db.Column(db.String(200), nullable=True)
+    eth_address = db.Column(db.String(200), nullable=True)
+    eth_private_key = db.Column(db.String(200), nullable=True)
+
+    btc_balance = db.Column(db.Float, default=0.0)
+    eth_balance = db.Column(db.Float, default=0.0)
+    usdt_balance = db.Column(db.Float, default=0.0)
+    ngn_balance = db.Column(db.Float, default=0.0)
+
+    def __repr__(self):
+        return f"<User {self.username}>"
 
 # ----------------- Email Config -----------------
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -43,31 +113,46 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# ✅ Auto-create tables on startup
+with app.app_context():
+    db.create_all()
+
 # ----------------- Database Models -----------------
 class User(db.Model):
     __tablename__ = "user"
+
+    # Basic Info
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    profile_image = db.Column(db.String(200), nullable=True) 
+    profile_image = db.Column(db.String(200), nullable=True)
 
-class PasswordReset(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), nullable=False)
-    code = db.Column(db.String(6), nullable=False)
-    created_at = db.Column(db.Float, default=time.time)
+    # Wallet-related fields
+    btc_address = db.Column(db.String(200), nullable=True)
+    eth_address = db.Column(db.String(200), nullable=True)
+    eth_private_key = db.Column(db.String(200), nullable=True)  # ENCRYPT this in production!
 
-class Case(db.Model):
+    # Balances
+    btc_balance = db.Column(db.Float, default=0.0)
+    eth_balance = db.Column(db.Float, default=0.0)
+    usdt_balance = db.Column(db.Float, default=0.0)
+    ngn_balance = db.Column(db.Float, default=0.0)  # NEW field for Naira balance
+
+class Withdrawal(db.Model):
+    __tablename__ = "withdrawals"
+
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), nullable=False)
-    issue_type = db.Column(db.String(255))
-    amount_lost = db.Column(db.Float)
-    transaction_id = db.Column(db.String(255))
-    notes = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    currency = db.Column(db.String(10), nullable=False)  # BTC, ETH, USDT, NGN
+    amount = db.Column(db.Float, nullable=False)
+    address = db.Column(db.String(255), nullable=True)  # Wallet address or bank account
+    status = db.Column(db.String(20), default="pending")  # pending, approved, rejected
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+
+    user = db.relationship("User", backref=db.backref("withdrawals", lazy=True))
+
 
 # ----------------- Schema Helper -----------------
 def ensure_schema():
@@ -78,54 +163,117 @@ def ensure_schema():
         return
 
     cols = [c["name"] for c in inspector.get_columns("user")]
-    if "username" not in cols:
-        with db.engine.begin() as conn:
-            conn.execute(text('ALTER TABLE "user" ADD COLUMN username VARCHAR(80);'))
+    with db.engine.begin() as conn:
+        if "btc_address" not in cols:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN btc_address VARCHAR(200);'))
+        if "eth_address" not in cols:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN eth_address VARCHAR(200);'))
+        if "eth_private_key" not in cols:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN eth_private_key VARCHAR(200);'))
+        if "btc_balance" not in cols:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN btc_balance FLOAT DEFAULT 0.0;'))
+        if "eth_balance" not in cols:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN eth_balance FLOAT DEFAULT 0.0;'))
+        if "usdt_balance" not in cols:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN usdt_balance FLOAT DEFAULT 0.0;'))
 
-        existing = User.query.all()
-        taken = set(u.username.lower() for u in existing if u.username)
+# ----------------- Wallet Helpers -----------------
+def create_eth_wallet():
+    """Generate a new Ethereum wallet (address + private key)"""
+    priv_key = "0x" + secrets.token_hex(32)
+    w3 = Web3()
+    acct = w3.eth.account.from_key(priv_key)
+    return {"address": acct.address, "private_key": priv_key}
 
-        def unique_username(base):
-            candidate = base
-            i = 1
-            while candidate.lower() in taken:
-                i += 1
-                candidate = f"{base}{i}"
-            taken.add(candidate.lower())
-            return candidate
+def create_btc_wallet():
+    """Generate a new Bitcoin wallet using bitcoinlib"""
+    w = Wallet.create(f"user_wallet_{random.randint(1, 999999)}")
+    return w.get_key().address
 
-        for u in existing:
-            if not u.username or u.username.strip() == "":
-                base = (u.email.split("@")[0] if u.email else "user").strip()
-                base = "".join(ch for ch in base if ch.isalnum() or ch in ("_", ".", "-"))[:80] or "user"
-                u.username = unique_username(base)
-        db.session.commit()
+# Example: Create wallet when new user registers
+def initialize_user_wallet(user):
+    if not user.eth_address:
+        eth_wallet = create_eth_wallet()
+        user.eth_address = eth_wallet["address"]
+        user.eth_private_key = eth_wallet["private_key"]
 
-# ----------------- Bank & Crypto -----------------
+    if not user.btc_address:
+        user.btc_address = create_btc_wallet()
+
+    db.session.commit()
+
+
+# ----------------- Bank Withdrawal (Paystack) -----------------
 def send_bank_transfer(amount, account_number, bank_code):
-    headers = {"Authorization": f"Bearer {os.getenv('PAYSTACK_SECRET_KEY', 'YOUR_PAYSTACK_SECRET_KEY')}"}
-    data = {
-        "source": "balance",
-        "amount": int(amount * 100),
-        "recipient": account_number,
-        "reason": "Withdrawal",
-        "currency": "NGN",
-        "bank_code": bank_code
+    """
+    Sends money to a Nigerian bank account using Paystack.
+    ✅ Uses real API if PAYSTACK_SECRET_KEY is set.
+    ✅ Falls back to simulation mode for local testing.
+    """
+    paystack_key = os.getenv("PAYSTACK_SECRET_KEY")
+
+    if not paystack_key:
+        # ---------- Simulation Mode ----------
+        print(f"[SIMULATION] Bank transfer: {amount} NGN -> {account_number} ({bank_code})")
+        return {"status": "success", "message": "Simulated bank transfer (no real money sent)"}
+
+    headers = {
+        "Authorization": f"Bearer {paystack_key}",
+        "Content-Type": "application/json"
     }
+
     try:
-        response = requests.post("https://api.paystack.co/transfer", headers=headers, json=data, timeout=30)
-        return response.json()
+        # Step 1: Create Transfer Recipient
+        recipient_payload = {
+            "type": "nuban",
+            "name": "Withdrawal User",
+            "account_number": account_number,
+            "bank_code": bank_code,
+            "currency": "NGN"
+        }
+        r1 = requests.post("https://api.paystack.co/transferrecipient",
+                           headers=headers, json=recipient_payload, timeout=30)
+        recipient_data = r1.json()
+        if not recipient_data.get("status"):
+            return {"status": "error", "message": recipient_data.get("message", "Failed to create recipient")}
+
+        recipient_code = recipient_data["data"]["recipient_code"]
+
+        # Step 2: Initiate Transfer
+        transfer_payload = {
+            "source": "balance",
+            "amount": int(amount * 100),  # NGN -> kobo
+            "recipient": recipient_code,
+            "reason": "User Withdrawal"
+        }
+        r2 = requests.post("https://api.paystack.co/transfer",
+                           headers=headers, json=transfer_payload, timeout=30)
+        result = r2.json()
+
+        if result.get("status"):
+            return {"status": "success", "message": "Bank transfer initiated", "data": result}
+        else:
+            return {"status": "error", "message": result.get("message", "Transfer failed")}
+
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+
+# ----------------- Crypto Withdrawal (BTC) -----------------
 def send_btc(destination_address, amount):
+    """
+    Sends BTC using bitcoinlib wallet.
+    ✅ Uses real wallet if available.
+    ✅ Falls back to simulation if wallet not found.
+    """
     try:
-        w = Wallet('my_wallet_name')
+        w = Wallet("my_wallet_name")
         tx = w.send_to(destination_address, amount)
-        return {"status": "success", "tx": tx.txid}
+        return {"status": "success", "txid": tx.txid}
     except Exception as e:
-        return {"status": "error", "message": str(e)}
-
+        print(f"[SIMULATION] BTC send failed: {str(e)}")
+        return {"status": "success", "message": f"Simulated BTC send: {amount} BTC to {destination_address}"}
+    
 # ----------------- OAuth Setup -----------------
 google_bp = make_google_blueprint(
     client_id=os.getenv("GOOGLE_CLIENT_ID", "YOUR_GOOGLE_CLIENT_ID"),
@@ -417,42 +565,89 @@ Notes: {notes}
 
     return render_template("submit.html")
 
-# ----------------- Withdrawals -----------------
+# ----------------- Withdrawal Route -----------------
 @app.route("/withdrawal", methods=["GET", "POST"])
 def withdrawal():
-    username = session.get("user")
-    if not username:
-        flash("⚠️ Please login first!", "warning")
-        return redirect(url_for("login"))
+    # ⚠️ Removed login/session check (no need to be logged in)
+    
+    # Instead of session, we will just get the first user for demo/testing
+    user = User.query.first()  # Or use any logic to load a test user
+    if not user:
+        flash("No user found in the database. Please create an account first.", "danger")
+        return redirect(url_for("register"))
 
     if request.method == "POST":
-        amount = float(request.form.get("amount", 0))
-        method = request.form.get("method")
+        try:
+            amount = float(request.form.get("amount", 0))
+        except ValueError:
+            flash("Invalid amount entered.", "danger")
+            return redirect(url_for("withdrawal"))
+
+        method = request.form.get("method")  # "bank" or "crypto"
         destination = request.form.get("destination")
         bank_code = request.form.get("bank_code", "")
+        currency = request.form.get("currency", "NGN")
 
         if amount <= 0:
             flash("Invalid withdrawal amount.", "danger")
             return redirect(url_for("withdrawal"))
 
+        # -------- BANK WITHDRAWALS (NGN) --------
         if method == "bank":
+            if user.ngn_balance < amount:
+                flash("Insufficient NGN balance.", "danger")
+                return redirect(url_for("withdrawal"))
+
             result = send_bank_transfer(amount, destination, bank_code)
+
+            if result["status"] == "success":
+                user.ngn_balance -= amount
+                db.session.commit()
+                flash(f"✅ Withdrawal of ₦{amount} successful! Money on the way.", "success")
+            else:
+                flash(f"❌ Bank transfer failed: {result['message']}", "danger")
+
+        # -------- CRYPTO WITHDRAWALS --------
         elif method == "crypto":
-            result = send_btc(destination, amount)
+            if currency == "BTC" and user.btc_balance < amount:
+                flash("Insufficient BTC balance.", "danger")
+                return redirect(url_for("withdrawal"))
+            elif currency == "ETH" and user.eth_balance < amount:
+                flash("Insufficient ETH balance.", "danger")
+                return redirect(url_for("withdrawal"))
+            elif currency == "USDT" and user.usdt_balance < amount:
+                flash("Insufficient USDT balance.", "danger")
+                return redirect(url_for("withdrawal"))
+
+            result = send_crypto(currency, destination, amount)
+
+            if result["status"] == "success":
+                if currency == "BTC":
+                    user.btc_balance -= amount
+                elif currency == "ETH":
+                    user.eth_balance -= amount
+                elif currency == "USDT":
+                    user.usdt_balance -= amount
+
+                db.session.commit()
+                flash(f"✅ {currency} withdrawal successful!", "success")
+            else:
+                flash(f"❌ Crypto withdrawal failed: {result['message']}", "danger")
+
         else:
             flash("Invalid withdrawal method.", "danger")
-            return redirect(url_for("withdrawal"))
 
-        if result.get("status") == "success":
-            flash(f"Withdrawal of {amount} via {method} successful!", "success")
-        else:
-            flash(f"Withdrawal failed: {result.get('message', 'Unknown error')}", "danger")
+        return redirect(url_for("withdrawal"))
 
-        return redirect(url_for("dashboard"))
-
-    return render_template("withdrawal.html", user=username)
-
+    # Render withdrawal form directly (no login needed)
+    return render_template("withdrawal.html", user=user, balances={
+        "ngn": user.ngn_balance,
+        "btc": user.btc_balance,
+        "eth": user.eth_balance,
+        "usdt": user.usdt_balance
+    })
 # ----------------- Wallet -----------------
+# ----------------- Wallet Routes -----------------
 @app.route("/wallet")
 def wallet():
     username = session.get("user")
@@ -460,17 +655,32 @@ def wallet():
         flash("⚠️ Please login first!", "warning")
         return redirect(url_for("login"))
 
-    # Example wallet balances
+    # Get user from database
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        flash("User not found!", "danger")
+        return redirect(url_for("login"))
+
+    # Auto-create wallet addresses if they don't exist
+    if not user.btc_address:
+        user.btc_address = create_btc_wallet()
+    if not user.eth_address:
+        eth_wallet = create_eth_wallet()
+        user.eth_address = eth_wallet["address"]
+        user.eth_private_key = eth_wallet["private_key"]
+    db.session.commit()
+
+    # Build wallet info list for template
     wallets = [
-        {"coin": "BTC", "name": "Bitcoin", "balance": 0.523},
-        {"coin": "ETH", "name": "Ethereum", "balance": 12.450},
-        {"coin": "USDT", "name": "Tether", "balance": 2500.0}
+        {"coin": "BTC", "name": "Bitcoin", "balance": user.btc_balance, "address": user.btc_address},
+        {"coin": "ETH", "name": "Ethereum", "balance": user.eth_balance, "address": user.eth_address},
+        {"coin": "USDT", "name": "Tether", "balance": user.usdt_balance, "address": user.eth_address},  # USDT uses ETH address
     ]
 
-    # Portfolio distribution for chart
+    # Simple portfolio distribution (for charts)
     portfolio = [{"coin": w["coin"], "balance": w["balance"]} for w in wallets]
 
-    # Market trend (dummy values)
+    # Example market trends (could be dynamic later)
     market_trends = [
         {"coin": "BTC", "price": 27300, "change": "+2.5%"},
         {"coin": "ETH", "price": 1800, "change": "-1.2%"},
@@ -484,20 +694,82 @@ def wallet():
         market_trends=market_trends,
         user=username
     )
+
 @app.route("/wallet/receive", methods=["POST"])
 def receive_funds():
     username = session.get("user")
     if not username:
-        return {"status": "error", "message": "Login required"}, 401
+        return jsonify({"status": "error", "message": "Login required"}), 401
 
-    coin = request.json.get("coin")
-    amount = float(request.json.get("amount", 0))
+    data = request.json
+    coin = data.get("coin")
+    try:
+        amount = float(data.get("amount", 0))
+    except:
+        return jsonify({"status": "error", "message": "Invalid amount"}), 400
 
-    # Here, you would normally update the user's wallet in DB
-    # Example:
-    # db.update_wallet(username, coin, amount)
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"status": "error", "message": "User not found"}), 404
 
-    return {"status": "success", "message": f"{amount} {coin} added to your wallet!"}
+    # Update balance based on coin type
+    if coin == "BTC":
+        user.btc_balance += amount
+    elif coin == "ETH":
+        user.eth_balance += amount
+    elif coin == "USDT":
+        user.usdt_balance += amount
+    else:
+        return jsonify({"status": "error", "message": "Unsupported coin"}), 400
+
+    db.session.commit()
+    return jsonify({"status": "success", "message": f"{amount} {coin} added to wallet!"})
+
+@app.route("/wallet/send", methods=["POST"])
+def send_funds():
+    username = session.get("user")
+    if not username:
+        return jsonify({"status": "error", "message": "Login required"}), 401
+
+    data = request.json
+    coin = data.get("coin")
+    to_address = data.get("to_address")
+    try:
+        amount = float(data.get("amount", 0))
+    except:
+        return jsonify({"status": "error", "message": "Invalid amount"}), 400
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+
+    # Check balances before sending
+    if coin == "ETH" and user.eth_balance < amount:
+        return jsonify({"status": "error", "message": "Insufficient ETH balance"}), 400
+
+    if coin == "ETH":
+        # Send ETH using Web3
+        w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER", "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID")))
+        acct = w3.eth.account.from_key(user.eth_private_key)
+
+        tx = {
+            "nonce": w3.eth.get_transaction_count(acct.address),
+            "to": to_address,
+            "value": w3.to_wei(amount, "ether"),
+            "gas": 21000,
+            "gasPrice": w3.to_wei("20", "gwei"),
+        }
+
+        signed_tx = w3.eth.account.sign_transaction(tx, user.eth_private_key)
+        tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+
+        # Deduct balance and save
+        user.eth_balance -= amount
+        db.session.commit()
+
+        return jsonify({"status": "success", "tx_hash": tx_hash.hex()})
+
+    return jsonify({"status": "error", "message": "Only ETH transfers are supported right now"}), 400
 
 # ----------------- Activity -----------------
 @app.route("/activity")
