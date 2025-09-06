@@ -23,7 +23,7 @@ app.secret_key = os.getenv("SECRET_KEY", "supersecretkey")
 # ----------------- Database Setup -----------------
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://phantomrecovery_db_user:phantomrecovery123@localhost:5432/phantomrecovery_db"
+    "postgresql://phantomrecovery_db_user:KasJByMOWqUSCCVwF7gMklNFJo2YV8rj@dpg-d2s6llq4d50c73dh7tm0-a/phantomrecovery_db"
 )
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
