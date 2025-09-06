@@ -27,5 +27,5 @@ bitcoinlib==0.7.5
 setuptools>=68.0.0
 wheel>=0.41.2
 numpy>=1.26.0
-web3==6.10.0
+web3==6.9.0
 
