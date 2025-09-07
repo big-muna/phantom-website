@@ -4,6 +4,7 @@ import time
 import requests
 import secrets
 from datetime import datetime
+from app import db
 from bitcoinlib.wallets import Wallet
 from web3 import Web3
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
@@ -72,14 +73,15 @@ def send_eth(to_address, amount_eth):
         return {"status": "error", "message": str(e)}
 
 # ----------------- Database Model -----------------
+
 class User(db.Model):
-    __tablename__ = "users"  # Use plural consistently
+    __tablename__ = "users"  # ✅ plural for consistency
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)  # nullable=False is safer
+    username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     profile_image = db.Column(db.String(200), nullable=True)
 
@@ -87,10 +89,14 @@ class User(db.Model):
     eth_address = db.Column(db.String(200), nullable=True)
     eth_private_key = db.Column(db.String(200), nullable=True)
 
-    btc_balance = db.Column(db.Float, default=0.0)
-    eth_balance = db.Column(db.Float, default=0.0)
-    usdt_balance = db.Column(db.Float, default=0.0)
-    ngn_balance = db.Column(db.Float, default=0.0)
+    btc_balance = db.Column(db.Float, default=0.0, nullable=False)
+    eth_balance = db.Column(db.Float, default=0.0, nullable=False)
+    usdt_balance = db.Column(db.Float, default=0.0, nullable=False)
+    ngn_balance = db.Column(db.Float, default=0.0, nullable=False)
+
+    # ✅ Relationships (if you have other models that reference users)
+    withdrawals = db.relationship('Withdrawal', backref='user', lazy=True)
+    transactions = db.relationship('Transaction', backref='user', lazy=True)
 
     def __repr__(self):
         return f"<User {self.username}>"
