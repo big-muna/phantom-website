@@ -4,7 +4,6 @@ import time
 import requests
 import secrets
 from datetime import datetime
-from app import db
 from bitcoinlib.wallets import Wallet
 from web3 import Web3
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
@@ -127,7 +126,7 @@ class Withdrawal(db.Model):
     __tablename__ = "withdrawals"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     currency = db.Column(db.String(10), nullable=False)  # BTC, ETH, USDT, NGN
     amount = db.Column(db.Float, nullable=False)
     address = db.Column(db.String(255), nullable=True)  # Wallet address or bank account
@@ -141,7 +140,7 @@ class Withdrawal(db.Model):
 def ensure_schema():
     inspector = db.inspect(db.engine)
     tables = inspector.get_table_names()
-    if "user" not in tables:
+    if "users" not in tables:
         db.create_all()
         return
 
