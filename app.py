@@ -73,10 +73,10 @@ def send_eth(to_address, amount_eth):
 
 # ----------------- Database Model -----------------
 class User(db.Model):
-    __tablename__ = "users"
+    __tablename__ = "users"  # Use plural consistently
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)  # nullable=False is safer
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -116,29 +116,6 @@ def allowed_file(filename):
 # ✅ Auto-create tables on startup
 with app.app_context():
     db.create_all()
-
-# ----------------- Database Models -----------------
-class User(db.Model):
-    __tablename__ = "user"
-
-    # Basic Info
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    profile_image = db.Column(db.String(200), nullable=True)
-
-    # Wallet-related fields
-    btc_address = db.Column(db.String(200), nullable=True)
-    eth_address = db.Column(db.String(200), nullable=True)
-    eth_private_key = db.Column(db.String(200), nullable=True)  # ENCRYPT this in production!
-
-    # Balances
-    btc_balance = db.Column(db.Float, default=0.0)
-    eth_balance = db.Column(db.Float, default=0.0)
-    usdt_balance = db.Column(db.Float, default=0.0)
-    ngn_balance = db.Column(db.Float, default=0.0)  # NEW field for Naira balance
 
 class Withdrawal(db.Model):
     __tablename__ = "withdrawals"
