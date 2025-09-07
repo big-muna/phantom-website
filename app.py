@@ -286,8 +286,9 @@ def about():
     return render_template("about.html")
 
 @app.route("/case")
+@login_required   # optional, if you want login required
 def case():
-    return render_template("case.html")  # or whatever template you want
+    return render_template("case.html")
 
 @app.route("/contact")
 def contact():
@@ -524,6 +525,35 @@ def submit():
         transaction_id = request.form.get("transaction_id")
         notes = request.form.get("notes")
 
+        # ✅ Validation
+        if not issue_type or not amount_lost:
+            flash("⚠️ Please fill in all required fields!", "danger")
+            return redirect(url_for("submit"))
+
+        # ✅ Convert amount to number safely
+        try:
+            amount_lost = float(amount_lost)
+        except ValueError:
+            flash("⚠️ Amount must be a number!", "danger")
+            return redirect(url_for("submit"))
+
+        # ✅ Save to DB (if using SQLAlchemy Case model)
+        try:
+            new_case = Case(
+                issue_type=issue_type,
+                amount_lost=amount_lost,
+                transaction_id=transaction_id,
+                notes=notes,
+                username=username  # Save who submitted
+            )
+            db.session.add(new_case)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            flash("❌ Failed to save your case. Please try again later.", "danger")
+            return redirect(url_for("submit"))
+
+        # ✅ Try sending email notification
         try:
             msg = Message(
                 subject="New Case Submission",
@@ -539,12 +569,13 @@ Wallet / Tx ID: {transaction_id}
 Notes: {notes}
 """
             mail.send(msg)
-            flash("✅ Case submitted successfully. Our team will review it shortly.", "success")
-        except Exception as e:
-            flash("⚠️ Case saved, but failed to send email notification.", "danger")
+        except Exception:
+            flash("⚠️ Case saved, but failed to send email notification.", "warning")
 
+        flash("✅ Case submitted successfully. Our team will review it shortly.", "success")
         return redirect(url_for("dashboard"))
 
+    # GET request — show the form
     return render_template("submit.html")
 
 # ----------------- Withdrawal Route -----------------
